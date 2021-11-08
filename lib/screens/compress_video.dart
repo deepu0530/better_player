@@ -1,51 +1,13 @@
-// import 'dart:io';
-
-// import 'package:better_player/better_player.dart';
-// import 'package:flutter/material.dart';
-
-// class Screen2 extends StatefulWidget {
-//   Screen2(this.videoPath);
-
-//   final String videoPath;
-
-//   @override
-//   _Screen2State createState() => _Screen2State();
-// }
-
-// class _Screen2State extends State<Screen2> {
-
-//  late BetterPlayerController _betterPlayerController;
-
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       // body: Center(
-        // child:BetterPlayer.file("${widget.videoPath}",
-        
-        // betterPlayerConfiguration: BetterPlayerConfiguration(
-        //   aspectRatio: 1,
-        //   looping: true,
-        //   autoPlay: true,
-        //   fit: BoxFit.contain,
-
-        // ),
-        // )
-//       // ),
-//     );
-//   }
-// }
-
-
-
+import 'dart:ffi';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:better_player/better_player.dart';
 import 'package:better_video_player/screens/compression_type.dart';
 import 'package:better_video_player/utils/colors.dart';
 import 'package:better_video_player/widgets/button_widget.dart';
 import 'package:flutter/material.dart';
-
+import 'package:video_compress/video_compress.dart';
 
 class CompressVideo extends StatefulWidget {
   CompressVideo(this.videoPath);
@@ -57,8 +19,35 @@ class CompressVideo extends StatefulWidget {
 }
 
 class _CompressVideoState extends State<CompressVideo> {
+  Uint8List? thumbnailBytes;
 
-late BetterPlayerController _betterPlayerController;
+  File? videofile;
+  int? videoSize;
+
+  _initPlayer() {
+    final file = File(widget.videoPath);
+    setState(() {
+      videofile = file;
+    });
+    // generateThumbnail(videofile!);
+    getVideoSize(videofile!);
+  }
+
+  // Future generateThumbnail(File file) async {
+  //   final thumbnailBytes = await VideoCompress.getByteThumbnail(file.path);
+  //   setState(() {
+  //     this.thumbnailBytes = thumbnailBytes;
+  //   });
+  // }
+
+  Future getVideoSize(File file) async {
+    final vsize = await file.length();
+    setState(() {
+      videoSize = vsize;
+    });
+  }
+
+  late BetterPlayerController _betterPlayerController;
 
   String idx = "";
 
@@ -72,7 +61,12 @@ late BetterPlayerController _betterPlayerController;
     "Smallest file size, best quality",
     "Choose your own settings",
   ];
-
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _initPlayer();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -122,19 +116,16 @@ late BetterPlayerController _betterPlayerController;
                   //width: 140,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(5),
-
                   ),
-                  child:BetterPlayer.file("${widget.videoPath}",
-        
-        betterPlayerConfiguration: BetterPlayerConfiguration(
-        
-          aspectRatio: 1,
-          looping: true,
-          autoPlay: true,
-          fit: BoxFit.cover,
-
-        ),
-        ),
+                  child: BetterPlayer.file(
+                    "${widget.videoPath}",
+                    betterPlayerConfiguration: BetterPlayerConfiguration(
+                      aspectRatio: 1,
+                      looping: true,
+                      autoPlay: true,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
                 ),
               ),
               Padding(
@@ -143,27 +134,7 @@ late BetterPlayerController _betterPlayerController;
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Column(
-                      children: [
-                        Text(
-                          "Original Size",
-                          style: TextStyle(
-                              color: Colors.white.withOpacity(0.5),
-                              fontSize: 16,
-                              fontWeight: FontWeight.w500),
-                        ),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        Text(
-                          "3,6MB",
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 20,
-                              fontWeight: FontWeight.w700),
-                        ),
-                      ],
-                    ),
+                    buildVideoSize(),
                     Column(
                       children: [
                         Text(
@@ -188,7 +159,6 @@ late BetterPlayerController _betterPlayerController;
                   ],
                 ),
               ),
-
               Container(
                 child: ListView.separated(
                   padding: EdgeInsets.only(left: 10, right: 10),
@@ -214,84 +184,12 @@ late BetterPlayerController _betterPlayerController;
                   },
                 ),
               ),
-              // Container(
-
-              //   padding: EdgeInsets.only(left: 10,right: 10),
-              //   child: Column(
-              //     children: [
-              //       CompressionTypeListWidget(),
-              //       SizedBox(height: 20,),
-              //        Container(
-              //           width: double.infinity,
-              //         padding: EdgeInsets.only(left: 20,right: 20,top: 15,bottom: 15),
-              //         decoration: BoxDecoration(
-              //           borderRadius: BorderRadius.circular(10),
-              //           border: Border.all(width: 1,color: Colors.grey)
-              //         ),
-              //         child: Column(
-              //           crossAxisAlignment: CrossAxisAlignment.start,
-              //           children: [
-              //              Text(
-              //                "Strong Compression",
-              //                style: TextStyle(
-              //                    color: Colors.white,
-              //                    fontSize: 20,
-              //                    fontWeight: FontWeight.w700),
-              //              ),
-              //              SizedBox(
-              //                height: 10,
-              //              ),
-              //              Text(
-              //                "Smallest file size, best quality",
-              //                style: TextStyle(
-              //                    color: Colors.white.withOpacity(0.5),
-              //                    fontSize: 16,
-              //                    fontWeight: FontWeight.w400),
-              //              )
-              //           ],
-              //         ),
-              //       ),
-              //        SizedBox(height: 20,),
-              //        Container(
-              //           width: double.infinity,
-              //         padding: EdgeInsets.only(left: 20,right: 20,top: 15,bottom: 15),
-              //         decoration: BoxDecoration(
-              //           borderRadius: BorderRadius.circular(10),
-              //           border: Border.all(width: 1,color: Colors.grey)
-              //         ),
-              //         child: Column(
-              //           crossAxisAlignment: CrossAxisAlignment.start,
-              //           children: [
-              //              Text(
-              //                "Custom",
-              //                style: TextStyle(
-              //                    color: Colors.white,
-              //                    fontSize: 20,
-              //                    fontWeight: FontWeight.w700),
-              //              ),
-              //              SizedBox(
-              //                height: 10,
-              //              ),
-              //              Text(
-              //                "Choose Your Own Settings",
-              //                style: TextStyle(
-              //                    color: Colors.white.withOpacity(0.5),
-              //                    fontSize: 16,
-              //                    fontWeight: FontWeight.w400),
-              //              )
-              //           ],
-              //         ),
-              //       ),
-              //     ],
-              //   ),
-              // ),
               GestureDetector(
                   onTap: () {
                     Navigator.push(
                         context,
                         MaterialPageRoute(
                             builder: (Context) => CompressionType()));
-                   
                   },
                   child: Container(
                       margin: EdgeInsets.only(
@@ -305,7 +203,31 @@ late BetterPlayerController _betterPlayerController;
       ),
     );
   }
- 
+
+  Widget buildVideoSize() {
+    if (videoSize == null) return Container();
+    final size = videoSize! / 1000;
+    return Column(
+      children: [
+        Text(
+          "Original Size",
+          style: TextStyle(
+              color: Colors.white.withOpacity(0.5),
+              fontSize: 16,
+              fontWeight: FontWeight.w500),
+        ),
+        SizedBox(
+          height: 10,
+        ),
+        Text(
+          "$size kb",
+          // "3,6MB",
+          style: TextStyle(
+              color: Colors.white, fontSize: 20, fontWeight: FontWeight.w700),
+        ),
+      ],
+    );
+  }
 }
 
 class CompressionTypeListWidget extends StatefulWidget {
@@ -328,7 +250,7 @@ class _CompressionTypeListWidgetState extends State<CompressionTypeListWidget> {
       height: 95,
       width: double.infinity,
       padding: EdgeInsets.only(left: 20, right: 20, top: 15, bottom: 15),
-      decoration: widget.boxposition== widget.typename
+      decoration: widget.boxposition == widget.typename
           ? BoxDecoration(
               borderRadius: BorderRadius.circular(10),
               color: AppColors.appcolorwithop)
