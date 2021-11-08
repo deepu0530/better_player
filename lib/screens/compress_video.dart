@@ -189,7 +189,10 @@ class _CompressVideoState extends State<CompressVideo> {
                     Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (Context) => CompressionType()));
+                            builder: (Context) => CompressionType(
+                              // widget.videoPath,
+                              "${videoSize}",
+                              )));
                   },
                   child: Container(
                       margin: EdgeInsets.only(

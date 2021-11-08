@@ -1,17 +1,26 @@
+import 'package:better_player/better_player.dart';
 import 'package:better_video_player/screens/comressed.dart';
 import 'package:better_video_player/utils/colors.dart';
 import 'package:better_video_player/widgets/button_widget.dart';
 import 'package:flutter/material.dart';
 
-
 class CompressionType extends StatefulWidget {
-  const CompressionType({Key? key}) : super(key: key);
+  CompressionType(
+      // this.videofilePath,
+      this.videosize);
+
+  //final String videofilePath;
+  final String videosize;
 
   @override
   _CompressionTypeState createState() => _CompressionTypeState();
 }
 
 class _CompressionTypeState extends State<CompressionType> {
+
+  String name="High";
+  int? select = 4;
+
   bool click = false;
   _tap() {
     setState(() {
@@ -71,8 +80,19 @@ class _CompressionTypeState extends State<CompressionType> {
                     decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(5),
                         image: DecorationImage(
-                            image: AssetImage("assets/images/image.png"),
+                            image: AssetImage(
+                              "assets/images/image.png",
+                            ),
                             fit: BoxFit.cover)),
+                    //           child:   BetterPlayer.file(
+                    //   "${widget.videofilePath}",
+                    //   betterPlayerConfiguration: BetterPlayerConfiguration(
+                    //     aspectRatio: 1,
+                    //     looping: true,
+                    //     autoPlay: true,
+                    //     fit: BoxFit.cover,
+                    //   ),
+                    // ),
                   ),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -94,7 +114,8 @@ class _CompressionTypeState extends State<CompressionType> {
                                 height: 10,
                               ),
                               Text(
-                                "3,6MB",
+                                '${widget.videosize} kb',
+                                // "3,6MB",
                                 style: TextStyle(
                                     color: Colors.white,
                                     fontSize: 20,
@@ -151,9 +172,15 @@ class _CompressionTypeState extends State<CompressionType> {
                                       ),
                                       border: Border.all(
                                           width: 1, color: Colors.grey)),
-                                          child: Center(
-                                            child: click?Icon(Icons.check,color: Colors.white,size: 15,):Container(),
-                                          ),
+                              child: Center(
+                                child: click
+                                    ? Icon(
+                                        Icons.check,
+                                        color: Colors.white,
+                                        size: 15,
+                                      )
+                                    : Container(),
+                              ),
                             ),
                           ),
                           SizedBox(
@@ -250,8 +277,9 @@ class _CompressionTypeState extends State<CompressionType> {
                               fontSize: 16,
                               fontWeight: FontWeight.w700),
                         ),
-                        Text(
-                          "High",
+                     Text(
+                        //  "High",
+                        name,
                           style: TextStyle(
                               color: Colors.yellow,
                               fontSize: 14,
@@ -262,12 +290,96 @@ class _CompressionTypeState extends State<CompressionType> {
                     SizedBox(
                       height: 20,
                     ),
-                    Text(
-                      "1.2MB",
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w400),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        Transform.scale(
+                          scale: 0.7,
+                          child: Radio(
+                           
+                              activeColor: Colors.orangeAccent,
+                            
+                              value: 0,
+                              groupValue: select,
+                              onChanged: (int? val) {
+                                print("selected $val");
+                                setState(() {
+                                  select = val ;
+                                  name="Low";
+                                });
+                              }),
+                        ),
+                        Transform.scale(
+                          scale: 0.8,
+                          child: Radio(
+                            activeColor: Colors.orangeAccent,
+                              value: 1,
+                              groupValue: select,
+                              onChanged: (val) {
+                                print("selected $val");
+                                setState(() {
+                                  select = val as int?;
+                                  name="Low1";
+                                });
+                              }),
+                        ),
+                        Transform.scale(
+                          scale: 0.9,
+                          child: Radio(
+                            activeColor: Colors.orangeAccent,
+                              value: 2,
+                              groupValue: select,
+                              onChanged: (val) {
+                                print("selected $val");
+                                setState(() {
+                                  select = val as int?;
+                                   name="Low2";
+                                });
+                              }),
+                        ),
+                        Transform.scale(
+                          scale: 1.0,
+                          child: Radio(
+                            activeColor: Colors.orangeAccent,
+                              value: 3,
+                              groupValue: select,
+                              onChanged: (val) {
+                                print("selected $val");
+                                setState(() {
+                                  select = val as int?;
+                                   name="Low3";
+                                });
+                              }),
+                        ),
+                        Transform.scale(
+                          scale: 1.1,
+                          child: Radio(
+                            activeColor: Colors.orangeAccent,
+                              value: 4,
+                              groupValue: select,
+                              onChanged: (val) {
+                                print("selected $val");
+                                setState(() {
+                                  select = val as int?;
+                                   name="High";
+                                });
+                              }),
+                        ),
+                        Transform.scale(
+                          scale: 1.2,
+                          child: Radio(
+                          activeColor: Colors.orangeAccent,
+                              value: 5,
+                              groupValue: select,
+                              onChanged: (val) {
+                                print("selected $val");
+                                setState(() {
+                                  select = val as int?;
+                                   name="High1";
+                                });
+                              }),
+                        ),
+                      ],
                     ),
                   ],
                 ),
