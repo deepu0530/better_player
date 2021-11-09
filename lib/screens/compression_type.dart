@@ -6,6 +6,9 @@ import 'package:better_video_player/screens/comressed.dart';
 import 'package:better_video_player/utils/colors.dart';
 import 'package:better_video_player/widgets/button_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:permission_handler/permission_handler.dart';
+
+
 import 'package:video_compress/video_compress.dart';
 
 class CompressionType extends StatefulWidget {
@@ -67,11 +70,31 @@ _compress()async{
       });
       print("compressed");
     Navigator.push(context, MaterialPageRoute(builder: (Context)=>Compressed(widget.videofilePath)));
+   // This function runs when I pressed a button.
+void _saveFile() async {
+  //var file = File('/sdcard/Maths paper.pdf');
+    var file = File('${mediaInfo.path}');
+    file.copy('${mediaInfo.path}');
+   // file.copy("/sdcard/Documents/Maths paper.pdf");
+  }
     }else{
       print("error");
     }
 
 }
+late final Permission _permission;
+ void _grantPermission () async {
+    var status = await Permission.storage.status;
+    if (status.isGranted) {
+
+    } else {
+      await Permission.storage.request();
+      status = await Permission.storage.status;
+      print(status);
+    }
+ }
+
+
 
   double _value = 0;
   String name = "High";
@@ -88,6 +111,7 @@ _compress()async{
     // TODO: implement initState
     super.initState();
 generateThumbnail();
+_grantPermission();
   }
   @override
   Widget build(BuildContext context) {

@@ -30,8 +30,8 @@ class _CompressedState extends State<Compressed> {
       ? CircularProgressIndicator()
       : Image.memory(
           thumbnailBytes!,
-          width: 200,
-          height: 200,
+          //width: 100,
+          height: 100,
           //height: 300,
         );
 
