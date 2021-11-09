@@ -3,6 +3,7 @@
 import 'package:better_video_player/screens/compress_video.dart';
 import 'package:better_video_player/utils/colors.dart';
 import 'package:flutter/material.dart';
+
 import 'package:image_picker/image_picker.dart';
 
 
@@ -15,6 +16,7 @@ class UploadVideo extends StatefulWidget {
 
 class _UploadVideoState extends State<UploadVideo> {
 
+  
 final picker =ImagePicker();
   _pickVideo() async {
     XFile? video = await picker.pickVideo(source: ImageSource.gallery);
@@ -94,6 +96,7 @@ final picker =ImagePicker();
                           fontWeight: FontWeight.w600),
                     ),
                   ),
+   
                   // if (_video != null)
                   //   _videoPlayerController!.value.isInitialized
                   //       ? AspectRatio(

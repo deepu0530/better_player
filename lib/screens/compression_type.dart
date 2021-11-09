@@ -3,13 +3,14 @@ import 'package:better_video_player/screens/comressed.dart';
 import 'package:better_video_player/utils/colors.dart';
 import 'package:better_video_player/widgets/button_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:video_compress/video_compress.dart';
 
 class CompressionType extends StatefulWidget {
   CompressionType(
-      // this.videofilePath,
+       this.videofilePath,
       this.videosize);
 
-  //final String videofilePath;
+  final String videofilePath;
   final String videosize;
 
   @override
@@ -17,8 +18,37 @@ class CompressionType extends StatefulWidget {
 }
 
 class _CompressionTypeState extends State<CompressionType> {
+  bool _loading = true;
+  String _counter = "video";
+_compress()async{
+    // setState(() {
+    //   _loading = true;
+    // });
+     await VideoCompress.setLogLevel(0);
+  final MediaInfo? mediaInfo = await VideoCompress.compressVideo(widget.videofilePath,
+   quality: VideoQuality.MediumQuality,
+      deleteOrigin: false,
+      includeAudio: true,
+    
+  );
+  //  setState(() {
+  //     _loading = false;
+  //   });
+    print(mediaInfo!.path);
+     if (mediaInfo != null) {
+      setState(() {
+        _counter = mediaInfo.path!;
+      });
+      print("compressed");
+    Navigator.push(context, MaterialPageRoute(builder: (Context)=>Compressed()));
+    }else{
+      print("error");
+    }
 
-  String name="High";
+}
+
+  double _value = 0;
+  String name = "High";
   int? select = 4;
 
   bool click = false;
@@ -140,7 +170,7 @@ class _CompressionTypeState extends State<CompressionType> {
                                 height: 10,
                               ),
                               Text(
-                                "1,2MB",
+                                "1.2MB",
                                 style: TextStyle(
                                     color: Colors.green,
                                     fontSize: 20,
@@ -246,13 +276,35 @@ class _CompressionTypeState extends State<CompressionType> {
                     SizedBox(
                       height: 20,
                     ),
-                    Text(
-                      "1.2MB",
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w400),
+                    SliderTheme(
+                      data: SliderTheme.of(context).copyWith(
+                        activeTrackColor: Colors.lightGreen,
+                        inactiveTrackColor: Colors.grey[600],
+                        trackShape: RectangularSliderTrackShape(),
+                        trackHeight: 4.0,
+                        thumbColor: Colors.white,
+                        thumbShape:
+                            RoundSliderThumbShape(enabledThumbRadius: 12.0),
+                        overlayColor: Colors.red.withAlpha(32),
+                        overlayShape:
+                            RoundSliderOverlayShape(overlayRadius: 28.0),
+                      ),
+                      child: Slider(
+                        value: _value,
+                        onChanged: (value) {
+                          setState(() {
+                            _value = value;
+                          });
+                        },
+                      ),
                     ),
+                    // Text(
+                    //   "1.2MB",
+                    //   style: TextStyle(
+                    //       color: Colors.white,
+                    //       fontSize: 16,
+                    //       fontWeight: FontWeight.w400),
+                    // ),
                   ],
                 ),
               ),
@@ -277,9 +329,9 @@ class _CompressionTypeState extends State<CompressionType> {
                               fontSize: 16,
                               fontWeight: FontWeight.w700),
                         ),
-                     Text(
-                        //  "High",
-                        name,
+                        Text(
+                          //  "High",
+                          name,
                           style: TextStyle(
                               color: Colors.yellow,
                               fontSize: 14,
@@ -296,86 +348,84 @@ class _CompressionTypeState extends State<CompressionType> {
                         Transform.scale(
                           scale: 0.7,
                           child: Radio(
-                           
                               activeColor: Colors.orangeAccent,
-                            
                               value: 0,
                               groupValue: select,
                               onChanged: (int? val) {
                                 print("selected $val");
                                 setState(() {
-                                  select = val ;
-                                  name="Low";
+                                  select = val;
+                                  name = "Low";
                                 });
                               }),
                         ),
                         Transform.scale(
                           scale: 0.8,
                           child: Radio(
-                            activeColor: Colors.orangeAccent,
+                              activeColor: Colors.orangeAccent,
                               value: 1,
                               groupValue: select,
                               onChanged: (val) {
                                 print("selected $val");
                                 setState(() {
                                   select = val as int?;
-                                  name="Low1";
+                                  name = "Low1";
                                 });
                               }),
                         ),
                         Transform.scale(
                           scale: 0.9,
                           child: Radio(
-                            activeColor: Colors.orangeAccent,
+                              activeColor: Colors.orangeAccent,
                               value: 2,
                               groupValue: select,
                               onChanged: (val) {
                                 print("selected $val");
                                 setState(() {
                                   select = val as int?;
-                                   name="Low2";
+                                  name = "Low2";
                                 });
                               }),
                         ),
                         Transform.scale(
                           scale: 1.0,
                           child: Radio(
-                            activeColor: Colors.orangeAccent,
+                              activeColor: Colors.orangeAccent,
                               value: 3,
                               groupValue: select,
                               onChanged: (val) {
                                 print("selected $val");
                                 setState(() {
                                   select = val as int?;
-                                   name="Low3";
+                                  name = "Low3";
                                 });
                               }),
                         ),
                         Transform.scale(
                           scale: 1.1,
                           child: Radio(
-                            activeColor: Colors.orangeAccent,
+                              activeColor: Colors.orangeAccent,
                               value: 4,
                               groupValue: select,
                               onChanged: (val) {
                                 print("selected $val");
                                 setState(() {
                                   select = val as int?;
-                                   name="High";
+                                  name = "High";
                                 });
                               }),
                         ),
                         Transform.scale(
                           scale: 1.2,
                           child: Radio(
-                          activeColor: Colors.orangeAccent,
+                              activeColor: Colors.orangeAccent,
                               value: 5,
                               groupValue: select,
                               onChanged: (val) {
                                 print("selected $val");
                                 setState(() {
                                   select = val as int?;
-                                   name="High1";
+                                  name = "High1";
                                 });
                               }),
                         ),
@@ -497,8 +547,8 @@ class _CompressionTypeState extends State<CompressionType> {
               ),
               GestureDetector(
                   onTap: () {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (Context) => Compressed()));
+                    _compress();
+                   
                   },
                   child: Container(
                       margin: EdgeInsets.only(
@@ -508,8 +558,12 @@ class _CompressionTypeState extends State<CompressionType> {
                       )))
             ],
           ),
-        ),
+        )
       ),
     );
   }
 }
+
+
+
+

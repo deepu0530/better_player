@@ -19,7 +19,7 @@ class CompressVideo extends StatefulWidget {
 }
 
 class _CompressVideoState extends State<CompressVideo> {
-  Uint8List? thumbnailBytes;
+ // Uint8List? thumbnailBytes;
 
   File? videofile;
   int? videoSize;
@@ -49,7 +49,7 @@ class _CompressVideoState extends State<CompressVideo> {
 
   late BetterPlayerController _betterPlayerController;
 
-  String idx = "";
+  String idx = "Basic Compression";
 
   List<String> typesList = [
     "Basic Compression",
@@ -190,7 +190,7 @@ class _CompressVideoState extends State<CompressVideo> {
                         context,
                         MaterialPageRoute(
                             builder: (Context) => CompressionType(
-                              // widget.videoPath,
+                               widget.videoPath,
                               "${videoSize}",
                               )));
                   },
