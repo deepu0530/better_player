@@ -26,7 +26,7 @@ class _CompressedState extends State<Compressed> {
     });
   }
 
-  Widget buildThumbNail() => thumbnailBytes == null
+  Widget buildThumbNail() => thumbnailBytes != null
       ? CircularProgressIndicator()
       : Image.memory(
           thumbnailBytes!,
