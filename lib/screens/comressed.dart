@@ -1,16 +1,40 @@
+import 'dart:typed_data';
+
 import 'package:better_video_player/screens/uploadvideo.dart';
 import 'package:better_video_player/utils/colors.dart';
 import 'package:better_video_player/widgets/button_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:video_compress/video_compress.dart';
 
 class Compressed extends StatefulWidget {
-  const Compressed({Key? key}) : super(key: key);
+  const Compressed(this.videofilepath2);
+
+  final String videofilepath2;
 
   @override
   _CompressedState createState() => _CompressedState();
 }
 
 class _CompressedState extends State<Compressed> {
+
+
+  Uint8List? thumbnailBytes;
+ Future generateThumbnail() async {
+    final thumbnailBytes = await VideoCompress.getByteThumbnail(widget.videofilepath2);
+    setState(() {
+      this.thumbnailBytes = thumbnailBytes;
+    });
+  }
+
+  Widget buildThumbNail() => thumbnailBytes == null
+      ? CircularProgressIndicator()
+      : Image.memory(
+          thumbnailBytes!,
+          width: 200,
+          height: 200,
+          //height: 300,
+        );
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -87,13 +111,14 @@ class _CompressedState extends State<Compressed> {
                   height: 50,
                 ),
                 Container(
-                  height: 170,
-                  width: 140,
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(5),
-                      image: DecorationImage(
-                          image: AssetImage("assets/images/image.png"),
-                          fit: BoxFit.cover)),
+                  // height: 170,
+                  // width: 140,
+                  // decoration: BoxDecoration(
+                  //     borderRadius: BorderRadius.circular(5),
+                  //     image: DecorationImage(
+                  //         image: AssetImage("assets/images/image.png"),
+                  //         fit: BoxFit.cover)),
+                  child: buildThumbNail(),
                 ),
                 SizedBox(
                   height: 30,
@@ -115,10 +140,10 @@ class _CompressedState extends State<Compressed> {
               children: [
                 GestureDetector(
                     onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (Context) => Compressed()));
+                      // Navigator.push(
+                      //     context,
+                      //     MaterialPageRoute(
+                      //         builder: (Context) => Compressed()));
                     },
                     child: Container(
                         margin: EdgeInsets.only(

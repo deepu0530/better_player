@@ -1,3 +1,6 @@
+import 'dart:io';
+import 'dart:typed_data';
+
 import 'package:better_player/better_player.dart';
 import 'package:better_video_player/screens/comressed.dart';
 import 'package:better_video_player/utils/colors.dart';
@@ -8,16 +11,39 @@ import 'package:video_compress/video_compress.dart';
 class CompressionType extends StatefulWidget {
   CompressionType(
        this.videofilePath,
-      this.videosize);
+      this.videosize,
+     
+      );
 
   final String videofilePath;
   final String videosize;
+   
 
   @override
   _CompressionTypeState createState() => _CompressionTypeState();
 }
 
 class _CompressionTypeState extends State<CompressionType> {
+
+  Uint8List? thumbnailBytes;
+ Future generateThumbnail() async {
+    final thumbnailBytes = await VideoCompress.getByteThumbnail(widget.videofilePath);
+    setState(() {
+      this.thumbnailBytes = thumbnailBytes;
+    });
+  }
+
+  Widget buildThumbNail() => thumbnailBytes == null
+      ? CircularProgressIndicator()
+      : Image.memory(
+          thumbnailBytes!,
+          width: 200,
+          height: 200,
+          //height: 300,
+        );
+
+
+
   bool _loading = true;
   String _counter = "video";
 _compress()async{
@@ -40,7 +66,7 @@ _compress()async{
         _counter = mediaInfo.path!;
       });
       print("compressed");
-    Navigator.push(context, MaterialPageRoute(builder: (Context)=>Compressed()));
+    Navigator.push(context, MaterialPageRoute(builder: (Context)=>Compressed(widget.videofilePath)));
     }else{
       print("error");
     }
@@ -57,7 +83,12 @@ _compress()async{
       click = !click;
     });
   }
-
+@override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+generateThumbnail();
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -105,24 +136,18 @@ _compress()async{
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Container(
-                    height: 100,
-                    width: 100,
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(5),
-                        image: DecorationImage(
-                            image: AssetImage(
-                              "assets/images/image.png",
-                            ),
-                            fit: BoxFit.cover)),
-                    //           child:   BetterPlayer.file(
-                    //   "${widget.videofilePath}",
-                    //   betterPlayerConfiguration: BetterPlayerConfiguration(
-                    //     aspectRatio: 1,
-                    //     looping: true,
-                    //     autoPlay: true,
-                    //     fit: BoxFit.cover,
-                    //   ),
-                    // ),
+                    // height: 200,
+                    // width: 100,
+                    // decoration: BoxDecoration(
+                    //     borderRadius: BorderRadius.circular(5),
+                    //     // image: DecorationImage(
+                    //     //     image: 
+                    //     //     AssetImage(
+                    //     //       "assets/images/image.png",
+                    //     //     ),
+                    //     //     fit: BoxFit.cover),
+                    //         ),
+                   child: buildThumbNail()
                   ),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,

@@ -19,7 +19,7 @@ class CompressVideo extends StatefulWidget {
 }
 
 class _CompressVideoState extends State<CompressVideo> {
- // Uint8List? thumbnailBytes;
+
 
   File? videofile;
   int? videoSize;
@@ -29,22 +29,42 @@ class _CompressVideoState extends State<CompressVideo> {
     setState(() {
       videofile = file;
     });
-    // generateThumbnail(videofile!);
+   
     getVideoSize(videofile!);
   }
 
-  // Future generateThumbnail(File file) async {
-  //   final thumbnailBytes = await VideoCompress.getByteThumbnail(file.path);
-  //   setState(() {
-  //     this.thumbnailBytes = thumbnailBytes;
-  //   });
-  // }
+ 
 
   Future getVideoSize(File file) async {
     final vsize = await file.length();
     setState(() {
       videoSize = vsize;
     });
+  }
+
+  Widget buildVideoSize() {
+    if (videoSize == null) return Container();
+    final size = videoSize! / 1000;
+    return Column(
+      children: [
+        Text(
+          "Original Size",
+          style: TextStyle(
+              color: Colors.white.withOpacity(0.5),
+              fontSize: 16,
+              fontWeight: FontWeight.w500),
+        ),
+        SizedBox(
+          height: 10,
+        ),
+        Text(
+          "$size kb",
+          // "3,6MB",
+          style: TextStyle(
+              color: Colors.white, fontSize: 20, fontWeight: FontWeight.w700),
+        ),
+      ],
+    );
   }
 
   late BetterPlayerController _betterPlayerController;
@@ -190,9 +210,10 @@ class _CompressVideoState extends State<CompressVideo> {
                         context,
                         MaterialPageRoute(
                             builder: (Context) => CompressionType(
-                               widget.videoPath,
-                              "${videoSize}",
-                              )));
+                                  
+                                  widget.videoPath,
+                                  "${videoSize}",
+                                )));
                   },
                   child: Container(
                       margin: EdgeInsets.only(
@@ -204,31 +225,6 @@ class _CompressVideoState extends State<CompressVideo> {
           ),
         ),
       ),
-    );
-  }
-
-  Widget buildVideoSize() {
-    if (videoSize == null) return Container();
-    final size = videoSize! / 1000;
-    return Column(
-      children: [
-        Text(
-          "Original Size",
-          style: TextStyle(
-              color: Colors.white.withOpacity(0.5),
-              fontSize: 16,
-              fontWeight: FontWeight.w500),
-        ),
-        SizedBox(
-          height: 10,
-        ),
-        Text(
-          "$size kb",
-          // "3,6MB",
-          style: TextStyle(
-              color: Colors.white, fontSize: 20, fontWeight: FontWeight.w700),
-        ),
-      ],
     );
   }
 }
