@@ -7,11 +7,12 @@ import 'package:better_video_player/utils/colors.dart';
 import 'package:better_video_player/widgets/button_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:path/path.dart' as path;
 
 import 'package:video_compress/video_compress.dart';
 
-class CompressionType extends StatefulWidget {
-  CompressionType(
+class Custom extends StatefulWidget {
+  Custom(
     this.videofilePath,
     this.videosize,
   );
@@ -20,11 +21,18 @@ class CompressionType extends StatefulWidget {
   final String videosize;
 
   @override
-  _CompressionTypeState createState() => _CompressionTypeState();
+  _CustomState createState() => _CustomState();
 }
 
-class _CompressionTypeState extends State<CompressionType> {
+class _CustomState extends State<Custom> {
+
+
+
+
+
   Uint8List? thumbnailBytes;
+
+  static get videosize => null;
   Future generateThumbnail() async {
     final thumbnailBytes =
         await VideoCompress.getByteThumbnail(widget.videofilePath);
@@ -37,44 +45,51 @@ class _CompressionTypeState extends State<CompressionType> {
       ? CircularProgressIndicator()
       : Image.memory(
           thumbnailBytes!,
-          width: 200,
-          height: 200,
+          width: 120,
+          // height: 200,
           //height: 300,
         );
 
-  bool _loading = true;
+  bool _loading = false;
   String _counter = "video";
+
+
+   VideoQuality _quality = VideoQuality.DefaultQuality;
+  String name = "Default";
+  int? select = 2;
+
   _compress() async {
-    // setState(() {
-    //   _loading = true;
-    // });
+    setState(() {
+      _loading = true;
+    });
     await VideoCompress.setLogLevel(0);
     final MediaInfo? mediaInfo = await VideoCompress.compressVideo(
       widget.videofilePath,
-      quality: VideoQuality.MediumQuality,
+      quality: _quality,
       deleteOrigin: false,
       includeAudio: true,
     );
-    //  setState(() {
-    //     _loading = false;
-    //   });
+     setState(() {
+      _loading = false;
+    });
     print(mediaInfo!.path);
     if (mediaInfo != null) {
       setState(() {
         _counter = mediaInfo.path!;
       });
+       
       print("compressed");
+      var file = File('${mediaInfo.path}');
+      await file.copy(
+          '/storage/emulated/0/Download/${path.basename(mediaInfo.path!)}');
+  setState(() {
+      _loading = false;
+    });
       Navigator.push(
           context,
           MaterialPageRoute(
               builder: (Context) => Compressed(widget.videofilePath)));
-      //This function runs when I pressed a button.
-      void _saveFile() async {
-        //var file = File('/sdcard/Maths paper.pdf');
-        var file = File('${mediaInfo.path}');
-        file.copy('${mediaInfo.path}');
-        // file.copy("/sdcard/Documents/Maths paper.pdf");
-      }
+      
     } else {
       print("error");
     }
@@ -92,8 +107,7 @@ class _CompressionTypeState extends State<CompressionType> {
   }
 
   double _value = 0;
-  String name = "High";
-  int? select = 4;
+
 
   bool click = false;
   _tap() {
@@ -107,7 +121,7 @@ class _CompressionTypeState extends State<CompressionType> {
     // TODO: implement initState
     super.initState();
     generateThumbnail();
-   _grantPermission();
+    _grantPermission();
   }
 
   @override
@@ -169,6 +183,7 @@ class _CompressionTypeState extends State<CompressionType> {
                     //     //     fit: BoxFit.cover),
                     //         ),
                     child: buildThumbNail()),
+                    SizedBox(width: 10,),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -189,6 +204,7 @@ class _CompressionTypeState extends State<CompressionType> {
                               height: 10,
                             ),
                             Text(
+                             
                               '${widget.videosize} kb',
                               // "3,6MB",
                               style: TextStyle(
@@ -198,6 +214,7 @@ class _CompressionTypeState extends State<CompressionType> {
                             ),
                           ],
                         ),
+                       
                         SizedBox(
                           width: 20,
                         ),
@@ -326,10 +343,10 @@ class _CompressionTypeState extends State<CompressionType> {
                       activeTrackColor: Colors.lightGreen,
                       inactiveTrackColor: Colors.grey[600],
                       trackShape: RectangularSliderTrackShape(),
-                      trackHeight: 4.0,
+                      trackHeight: 6.0,
                       thumbColor: Colors.white,
                       thumbShape:
-                          RoundSliderThumbShape(enabledThumbRadius: 12.0),
+                           RoundSliderThumbShape(enabledThumbRadius: 10.0),
                       overlayColor: Colors.red.withAlpha(32),
                       overlayShape:
                           RoundSliderOverlayShape(overlayRadius: 28.0),
@@ -377,6 +394,7 @@ class _CompressionTypeState extends State<CompressionType> {
                       Text(
                         //  "High",
                         name,
+                       
                         style: TextStyle(
                             color: Colors.yellow,
                             fontSize: 14,
@@ -390,22 +408,37 @@ class _CompressionTypeState extends State<CompressionType> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
+                      // Transform.scale(
+                      //   scale: 0.7,
+                      //   child: Radio(
+                      //       activeColor: Colors.orangeAccent,
+                      //       value: 0,
+                      //       groupValue: select,
+                      //       onChanged: (int? val) {
+                      //         print("selected $val");
+                      //         setState(() {
+                      //           select = val;
+                      //           name = "Low";
+                      //         });
+                      //       }),
+                      // ),
                       Transform.scale(
-                        scale: 0.7,
+                        scale: 0.8,
                         child: Radio(
                             activeColor: Colors.orangeAccent,
                             value: 0,
                             groupValue: select,
-                            onChanged: (int? val) {
+                            onChanged: (val) {
                               print("selected $val");
                               setState(() {
-                                select = val;
-                                name = "Low";
+                                select = val as int?;
+                                _quality == VideoQuality.LowQuality;
+                                name="Low";
                               });
                             }),
                       ),
                       Transform.scale(
-                        scale: 0.8,
+                        scale: 0.9,
                         child: Radio(
                             activeColor: Colors.orangeAccent,
                             value: 1,
@@ -414,12 +447,13 @@ class _CompressionTypeState extends State<CompressionType> {
                               print("selected $val");
                               setState(() {
                                 select = val as int?;
-                                name = "Low1";
+                                 _quality == VideoQuality.MediumQuality;
+                                 name="Medium";
                               });
                             }),
                       ),
                       Transform.scale(
-                        scale: 0.9,
+                        scale: 1.0,
                         child: Radio(
                             activeColor: Colors.orangeAccent,
                             value: 2,
@@ -428,12 +462,13 @@ class _CompressionTypeState extends State<CompressionType> {
                               print("selected $val");
                               setState(() {
                                 select = val as int?;
-                                name = "Low2";
+                                _quality == VideoQuality.DefaultQuality;
+                                name="Default";
                               });
                             }),
                       ),
                       Transform.scale(
-                        scale: 1.0,
+                        scale: 1.1,
                         child: Radio(
                             activeColor: Colors.orangeAccent,
                             value: 3,
@@ -442,38 +477,25 @@ class _CompressionTypeState extends State<CompressionType> {
                               print("selected $val");
                               setState(() {
                                 select = val as int?;
-                                name = "Low3";
+                                  _quality == VideoQuality.HighestQuality;
+                                  name="High";
                               });
                             }),
                       ),
-                      Transform.scale(
-                        scale: 1.1,
-                        child: Radio(
-                            activeColor: Colors.orangeAccent,
-                            value: 4,
-                            groupValue: select,
-                            onChanged: (val) {
-                              print("selected $val");
-                              setState(() {
-                                select = val as int?;
-                                name = "High";
-                              });
-                            }),
-                      ),
-                      Transform.scale(
-                        scale: 1.2,
-                        child: Radio(
-                            activeColor: Colors.orangeAccent,
-                            value: 5,
-                            groupValue: select,
-                            onChanged: (val) {
-                              print("selected $val");
-                              setState(() {
-                                select = val as int?;
-                                name = "High1";
-                              });
-                            }),
-                      ),
+                      // Transform.scale(
+                      //   scale: 1.2,
+                      //   child: Radio(
+                      //       activeColor: Colors.orangeAccent,
+                      //       value: 5,
+                      //       groupValue: select,
+                      //       onChanged: (val) {
+                      //         print("selected $val");
+                      //         setState(() {
+                      //           select = val as int?;
+                      //           name = "High1";
+                      //         });
+                      //       }),
+                      // ),
                     ],
                   ),
                 ],
@@ -594,7 +616,7 @@ class _CompressionTypeState extends State<CompressionType> {
                 onTap: () {
                   _compress();
                 },
-                child: Container(
+                child: _loading?CircularProgressIndicator():Container(
                     margin: EdgeInsets.only(
                         top: 50, bottom: 50, left: 10, right: 10),
                     child: ButtonWidget(

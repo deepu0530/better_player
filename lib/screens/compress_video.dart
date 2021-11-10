@@ -1,9 +1,8 @@
-import 'dart:ffi';
 import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:better_player/better_player.dart';
-import 'package:better_video_player/screens/compression_type.dart';
+import 'package:better_video_player/screens/custom.dart';
 import 'package:better_video_player/utils/colors.dart';
 import 'package:better_video_player/widgets/button_widget.dart';
 import 'package:flutter/material.dart';
@@ -20,7 +19,7 @@ class CompressVideo extends StatefulWidget {
 
 class _CompressVideoState extends State<CompressVideo> {
 
-
+  bool _loading = true;
   File? videofile;
   int? videoSize;
 
@@ -89,6 +88,13 @@ class _CompressVideoState extends State<CompressVideo> {
   }
 
   @override
+  void dispose() {
+    _betterPlayerController.dispose();
+    super.dispose();
+  }
+
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.blackColor,
@@ -140,11 +146,12 @@ class _CompressVideoState extends State<CompressVideo> {
                   child: BetterPlayer.file(
                     "${widget.videoPath}",
                     betterPlayerConfiguration: BetterPlayerConfiguration(
-                      aspectRatio: 1,
-                      looping: true,
-                      autoPlay: true,
-                      fit: BoxFit.cover,
+                      aspectRatio: 16/9,
+                      looping: false,
+                      autoPlay: false,
+                      fit: BoxFit.contain,
                     ),
+                  
                   ),
                 ),
               ),
@@ -209,9 +216,10 @@ class _CompressVideoState extends State<CompressVideo> {
                     Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (Context) => CompressionType(
+                            builder: (Context) => Custom(
                                   
                                   widget.videoPath,
+                                  
                                   "${videoSize}",
                                 )));
                   },

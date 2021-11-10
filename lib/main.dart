@@ -18,6 +18,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         
         primarySwatch: Colors.blue,
+         unselectedWidgetColor:Colors.grey[600],
       ),
       home:UploadVideo()
     );
