@@ -28,11 +28,9 @@ class _CustomState extends State<Custom> {
 
 
 
-
-
   Uint8List? thumbnailBytes;
 
-  static get videosize => null;
+
   Future generateThumbnail() async {
     final thumbnailBytes =
         await VideoCompress.getByteThumbnail(widget.videofilePath);
@@ -56,18 +54,19 @@ class _CustomState extends State<Custom> {
 
    VideoQuality _quality = VideoQuality.DefaultQuality;
   String name = "Default";
-  int? select = 2;
+  // int? select = 2;
 
   _compress() async {
     setState(() {
       _loading = true;
     });
     await VideoCompress.setLogLevel(0);
+    
     final MediaInfo? mediaInfo = await VideoCompress.compressVideo(
       widget.videofilePath,
       quality: _quality,
       deleteOrigin: false,
-      includeAudio: true,
+      includeAudio: click?false:true,
     );
      setState(() {
       _loading = false;
@@ -79,16 +78,21 @@ class _CustomState extends State<Custom> {
       });
        
       print("compressed");
+      
       var file = File('${mediaInfo.path}');
       await file.copy(
           '/storage/emulated/0/Download/${path.basename(mediaInfo.path!)}');
+      // await file.copy(
+      //     '/Downloads/${path.basename(mediaInfo.path!)}');
   setState(() {
       _loading = false;
     });
+
+
       Navigator.push(
           context,
           MaterialPageRoute(
-              builder: (Context) => Compressed(widget.videofilePath)));
+              builder: (Context) => Compressed('${widget.videofilePath}')));
       
     } else {
       print("error");
@@ -426,13 +430,11 @@ class _CustomState extends State<Custom> {
                         scale: 0.8,
                         child: Radio(
                             activeColor: Colors.orangeAccent,
-                            value: 0,
-                            groupValue: select,
-                            onChanged: (val) {
-                              print("selected $val");
+                            value: VideoQuality.LowQuality,
+                            groupValue: _quality,
+                            onChanged: (VideoQuality? val) {
                               setState(() {
-                                select = val as int?;
-                                _quality == VideoQuality.LowQuality;
+                                _quality = val!;
                                 name="Low";
                               });
                             }),
@@ -441,14 +443,12 @@ class _CustomState extends State<Custom> {
                         scale: 0.9,
                         child: Radio(
                             activeColor: Colors.orangeAccent,
-                            value: 1,
-                            groupValue: select,
-                            onChanged: (val) {
-                              print("selected $val");
+                            value: VideoQuality.MediumQuality,
+                            groupValue: _quality,
+                           onChanged: (VideoQuality? val) {
                               setState(() {
-                                select = val as int?;
-                                 _quality == VideoQuality.MediumQuality;
-                                 name="Medium";
+                                _quality = val!;
+                                name="Medum";
                               });
                             }),
                       ),
@@ -456,13 +456,11 @@ class _CustomState extends State<Custom> {
                         scale: 1.0,
                         child: Radio(
                             activeColor: Colors.orangeAccent,
-                            value: 2,
-                            groupValue: select,
-                            onChanged: (val) {
-                              print("selected $val");
+                            value: VideoQuality.DefaultQuality,
+                            groupValue: _quality,
+                            onChanged: (VideoQuality? val) {
                               setState(() {
-                                select = val as int?;
-                                _quality == VideoQuality.DefaultQuality;
+                                _quality = val!;
                                 name="Default";
                               });
                             }),
@@ -471,14 +469,12 @@ class _CustomState extends State<Custom> {
                         scale: 1.1,
                         child: Radio(
                             activeColor: Colors.orangeAccent,
-                            value: 3,
-                            groupValue: select,
-                            onChanged: (val) {
-                              print("selected $val");
+                            value: VideoQuality.HighestQuality,
+                            groupValue: _quality,
+                            onChanged: (VideoQuality? val) {
                               setState(() {
-                                select = val as int?;
-                                  _quality == VideoQuality.HighestQuality;
-                                  name="High";
+                                _quality = val!;
+                                name="High";
                               });
                             }),
                       ),

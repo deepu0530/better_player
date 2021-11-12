@@ -1,10 +1,15 @@
 
 
+import 'dart:io';
+
 import 'package:better_video_player/screens/compress_video.dart';
 import 'package:better_video_player/utils/colors.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_file_manager/flutter_file_manager.dart';
 
 import 'package:image_picker/image_picker.dart';
+import 'package:path_provider_ex/path_provider_ex.dart';
+import 'package:path/path.dart' as p;
 
 
 class UploadVideo extends StatefulWidget {
@@ -26,14 +31,30 @@ final picker =ImagePicker();
   }
 
 
-//  final picker = ImagePicker();
+var files;
 
-  // _pickVideo() async {
-  //   XFile? video = await picker.pickVideo(source: ImageSource.gallery);
-  //   if(video != null){
-  //    // Navigator.push(context, MaterialPageRoute(builder: (Context)=>Screen2(video.path)));
-  //   }
-  // }
+
+// void getfiles()async{
+//   List<StorageInfo> storageInfo=await PathProviderEx.getStorageInfo();
+//   var root =StorageInfo[0].rootDir;
+//   var fm = FileManager(root: Directory(root));
+//   files = await fm.filesTree(
+//     excludeHidden: ["/storage/emulated/0/Download/"],
+
+//   );
+//   setState(() {
+    
+//   });
+  
+// }
+
+// @override
+//   void initState() {
+//     // TODO: implement initState
+//     super.initState();
+//     getfiles();
+//   }
+
 
   @override
   Widget build(BuildContext context) {
