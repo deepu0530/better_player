@@ -7,9 +7,10 @@ import 'package:better_video_player/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_file_manager/flutter_file_manager.dart';
 
+
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider_ex/path_provider_ex.dart';
-import 'package:path/path.dart' as p;
+
 
 
 class UploadVideo extends StatefulWidget {
@@ -36,7 +37,7 @@ var files;
 
 // void getfiles()async{
 //   List<StorageInfo> storageInfo=await PathProviderEx.getStorageInfo();
-//   var root =StorageInfo[0].rootDir;
+//   var root =StorageInfo[0].rootDir ;
 //   var fm = FileManager(root: Directory(root));
 //   files = await fm.filesTree(
 //     excludeHidden: ["/storage/emulated/0/Download/"],

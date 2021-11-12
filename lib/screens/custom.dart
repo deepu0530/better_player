@@ -4,7 +4,9 @@ import 'dart:typed_data';
 import 'package:better_player/better_player.dart';
 import 'package:better_video_player/screens/comressed.dart';
 import 'package:better_video_player/utils/colors.dart';
+import 'package:better_video_player/video_compress_api.dart';
 import 'package:better_video_player/widgets/button_widget.dart';
+import 'package:better_video_player/widgets/progress_dialogue_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:path/path.dart' as path;
@@ -25,8 +27,50 @@ class Custom extends StatefulWidget {
 }
 
 class _CustomState extends State<Custom> {
+  File? videofile;
+  int? videoSize;
 
+  _initPlayer() {
+    final file = File(widget.videofilePath);
+    setState(() {
+      videofile = file;
+    });
+   
+    getVideoSize(videofile!);
+  }
 
+ 
+
+  Future getVideoSize(File file) async {
+    final vsize = await file.length();
+    setState(() {
+      videoSize = vsize;
+    });
+  }
+Widget buildVideoSize() {
+    if (videoSize == null) return Container();
+    final size = videoSize! / 1000;
+    return Column(
+      children: [
+        Text(
+          "Original Size",
+          style: TextStyle(
+              color: Colors.white.withOpacity(0.5),
+              fontSize: 16,
+              fontWeight: FontWeight.w500),
+        ),
+        SizedBox(
+          height: 10,
+        ),
+        Text(
+          "$size kb",
+          // "3,6MB",
+          style: TextStyle(
+              color: Colors.white, fontSize: 20, fontWeight: FontWeight.w700),
+        ),
+      ],
+    );
+  }
 
   Uint8List? thumbnailBytes;
 
@@ -56,47 +100,88 @@ class _CustomState extends State<Custom> {
   String name = "Default";
   // int? select = 2;
 
-  _compress() async {
-    setState(() {
-      _loading = true;
-    });
-    await VideoCompress.setLogLevel(0);
+  // _compress() async {
+  //   // showDialog(context: context, builder: (Context)=>Dialog(child:ProgressDialogueWidget()));
+  //   setState(() {
+  //     _loading = true;
+  //   });
+  //   await VideoCompress.setLogLevel(0);
     
-    final MediaInfo? mediaInfo = await VideoCompress.compressVideo(
-      widget.videofilePath,
-      quality: _quality,
-      deleteOrigin: false,
-      includeAudio: click?false:true,
-    );
-     setState(() {
-      _loading = false;
+  //   final MediaInfo? mediaInfo = await VideoCompress.compressVideo(
+  //     widget.videofilePath,
+  //     quality: _quality,
+  //     deleteOrigin: false,
+  //     includeAudio: click?false:true,
+  //   );
+  //    setState(() {
+  //     _loading = false;
+  //   });
+  //   print(mediaInfo!.path);
+  //   if (mediaInfo != null) {
+  //     setState(() {
+  //       _counter = mediaInfo.path!;
+  //     });
+       
+  //     print("compressed");
+      
+  //     var file = File('${mediaInfo.path}');
+  //     await file.copy(
+  //         '/storage/emulated/0/Download/${path.basename(mediaInfo.path!)}');
+  //     // await file.copy(
+  //     //     '/Downloads/${path.basename(mediaInfo.path!)}');
+  // setState(() {
+  //     _loading = false;
+  //   });
+
+
+  //     Navigator.push(
+  //         context,
+  //         MaterialPageRoute(
+  //             builder: (Context) => Compressed(widget.videofilePath)));
+      
+  //   } else {
+  //     print("error");
+  //   }
+  // }
+  MediaInfo? compressedVideoInfo;
+  Future _compress() async {
+     showDialog(context: context,
+     barrierDismissible: false
+     , builder: (Context)=>Dialog(
+       
+       child:ProgressDialogueWidget()
+       ));
+   final mediaInfo = await VideoCompressApi.compressVideo(widget.videofilePath);
+   
+    setState(() {
+      compressedVideoInfo = mediaInfo;
     });
     print(mediaInfo!.path);
-    if (mediaInfo != null) {
-      setState(() {
-        _counter = mediaInfo.path!;
-      });
+  //   if (mediaInfo != null) {
+  //     setState(() {
+  //       _counter = mediaInfo.path!;
+  //     });
        
-      print("compressed");
+  //     print("compressed");
       
-      var file = File('${mediaInfo.path}');
-      await file.copy(
-          '/storage/emulated/0/Download/${path.basename(mediaInfo.path!)}');
-      // await file.copy(
-      //     '/Downloads/${path.basename(mediaInfo.path!)}');
-  setState(() {
-      _loading = false;
-    });
+  //     var file = File('${mediaInfo.path}');
+  //     await file.copy(
+  //         '/storage/emulated/0/Download/${path.basename(mediaInfo.path!)}');
+  //     // await file.copy(
+  //     //     '/Downloads/${path.basename(mediaInfo.path!)}');
+  // setState(() {
+  //     _loading = false;
+  //   });
 
 
-      Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (Context) => Compressed('${widget.videofilePath}')));
+  //     Navigator.push(
+  //         context,
+  //         MaterialPageRoute(
+  //             builder: (Context) => Compressed(widget.videofilePath)));
       
-    } else {
-      print("error");
-    }
+  //   } else {
+  //     print("error");
+  //   }
   }
 
   late final Permission _permission;
@@ -125,6 +210,7 @@ class _CustomState extends State<Custom> {
     // TODO: implement initState
     super.initState();
     generateThumbnail();
+    _initPlayer();
     _grantPermission();
   }
 
@@ -194,31 +280,31 @@ class _CustomState extends State<Custom> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              "Original Size",
-                              style: TextStyle(
-                                  color: Colors.white.withOpacity(0.5),
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w500),
-                            ),
-                            SizedBox(
-                              height: 10,
-                            ),
-                            Text(
+                        // Column(
+                        //   crossAxisAlignment: CrossAxisAlignment.start,
+                        //   children: [
+                        //     Text(
+                        //       "Original Size",
+                        //       style: TextStyle(
+                        //           color: Colors.white.withOpacity(0.5),
+                        //           fontSize: 16,
+                        //           fontWeight: FontWeight.w500),
+                        //     ),
+                        //     SizedBox(
+                        //       height: 10,
+                        //     ),
+                        //     Text(
                              
-                              '${widget.videosize} kb',
-                              // "3,6MB",
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.w700),
-                            ),
-                          ],
-                        ),
-                       
+                        //       '${widget.videosize} kb',
+                        //       // "3,6MB",
+                        //       style: TextStyle(
+                        //           color: Colors.white,
+                        //           fontSize: 20,
+                        //           fontWeight: FontWeight.w700),
+                        //     ),
+                        //   ],
+                        // ),
+                       buildVideoSize(),
                         SizedBox(
                           width: 20,
                         ),
@@ -612,12 +698,21 @@ class _CustomState extends State<Custom> {
                 onTap: () {
                   _compress();
                 },
-                child: _loading?CircularProgressIndicator():Container(
+                child:Container(
                     margin: EdgeInsets.only(
                         top: 50, bottom: 50, left: 10, right: 10),
                     child: ButtonWidget(
                       buttonname: "Continue",
-                    )))
+                    )
+                    )
+                //  _loading?CircularProgressIndicator():Container(
+                //     margin: EdgeInsets.only(
+                //         top: 50, bottom: 50, left: 10, right: 10),
+                //     child: ButtonWidget(
+                //       buttonname: "Continue",
+                //     )
+                //     )
+                    )
           ],
         ),
       )),

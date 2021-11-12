@@ -7,9 +7,9 @@ import 'package:flutter/material.dart';
 import 'package:video_compress/video_compress.dart';
 
 class Compressed extends StatefulWidget {
-  const Compressed(this.videofilepath2);
+  const Compressed(this.videofilepath);
 
-  final String videofilepath2;
+  final String videofilepath;
 
   @override
   _CompressedState createState() => _CompressedState();
@@ -20,7 +20,7 @@ class _CompressedState extends State<Compressed> {
 
   Uint8List? thumbnailBytes;
  Future generateThumbnail() async {
-    final thumbnailBytes = await VideoCompress.getByteThumbnail(widget.videofilepath2);
+    final thumbnailBytes = await VideoCompress.getByteThumbnail(widget.videofilepath);
     setState(() {
       this.thumbnailBytes = thumbnailBytes;
     });
@@ -31,9 +31,16 @@ class _CompressedState extends State<Compressed> {
       : Image.memory(
           thumbnailBytes!,
           width: 100,
-          height: 100,
+          height: 150,
           //height: 300,
         );
+
+        @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    generateThumbnail();
+  }
 
   @override
   Widget build(BuildContext context) {
