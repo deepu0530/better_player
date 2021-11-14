@@ -7,39 +7,66 @@ import 'package:flutter/material.dart';
 import 'package:video_compress/video_compress.dart';
 
 class Compressed extends StatefulWidget {
-  const Compressed(this.videofilepath);
+  const Compressed(this.videofilepath,this.cmediainfo );
 
   final String videofilepath;
-
+final MediaInfo cmediainfo;
   @override
   _CompressedState createState() => _CompressedState();
 }
 
 class _CompressedState extends State<Compressed> {
-
-
   Uint8List? thumbnailBytes;
- Future generateThumbnail() async {
-    final thumbnailBytes = await VideoCompress.getByteThumbnail(widget.videofilepath);
+  Future generateThumbnail() async {
+    final thumbnailBytes =
+        await VideoCompress.getByteThumbnail(widget.videofilepath);
     setState(() {
       this.thumbnailBytes = thumbnailBytes;
     });
   }
 
+MediaInfo? CompressedVideoInfo;
+
+  Future generateCompressedVideoInfo() async {
+   
+    setState(() {
+      CompressedVideoInfo = widget.cmediainfo;
+    });
+  }
+  Widget buildCompressedVideoInfo(){
+    if (CompressedVideoInfo == null) return Container();
+    final size = CompressedVideoInfo!.filesize! / 1000;
+    return  Text(
+                  "$size kb",
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w700),
+                );
+  }
+
   Widget buildThumbNail() => thumbnailBytes == null
       ? CircularProgressIndicator()
-      : Image.memory(
-          thumbnailBytes!,
-          width: 100,
-          height: 150,
-          //height: 300,
+      : Container(
+          child: Image.memory(
+            thumbnailBytes!,
+            width: 150,
+            height: 150,
+            fit: BoxFit.cover,
+          ),
         );
 
-        @override
+
+
+
+
+
+  @override
   void initState() {
     // TODO: implement initState
     super.initState();
     generateThumbnail();
+    generateCompressedVideoInfo();
   }
 
   @override
@@ -107,26 +134,18 @@ class _CompressedState extends State<Compressed> {
                 SizedBox(
                   height: 15,
                 ),
-                Text(
-                  "1,2MB",
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w700),
-                ),
+                buildCompressedVideoInfo(),
+                // Text(
+                //   "1,2MB",
+                //   style: TextStyle(
+                //       color: Colors.white,
+                //       fontSize: 14,
+                //       fontWeight: FontWeight.w700),
+                // ),
                 SizedBox(
                   height: 50,
                 ),
-                Container(
-                  // height: 170,
-                  // width: 140,
-                  // decoration: BoxDecoration(
-                  //     borderRadius: BorderRadius.circular(5),
-                  //     image: DecorationImage(
-                  //         image: AssetImage("assets/images/image.png"),
-                  //         fit: BoxFit.cover)),
-                  child: buildThumbNail(),
-                ),
+                buildThumbNail(),
                 SizedBox(
                   height: 30,
                 ),

@@ -220,7 +220,7 @@ class _CompressVideoState extends State<CompressVideo> {
                                   
                                   widget.videoPath,
                                   
-                                  '${videoSize}',
+                                  //'${videoSize}',
                                 )));
                   },
                   child: Container(

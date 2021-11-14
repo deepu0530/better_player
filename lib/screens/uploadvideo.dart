@@ -5,11 +5,11 @@ import 'dart:io';
 import 'package:better_video_player/screens/compress_video.dart';
 import 'package:better_video_player/utils/colors.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_file_manager/flutter_file_manager.dart';
+
 
 
 import 'package:image_picker/image_picker.dart';
-import 'package:path_provider_ex/path_provider_ex.dart';
+
 
 
 

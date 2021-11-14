@@ -4,10 +4,11 @@ import 'dart:typed_data';
 import 'package:better_player/better_player.dart';
 import 'package:better_video_player/screens/comressed.dart';
 import 'package:better_video_player/utils/colors.dart';
-import 'package:better_video_player/video_compress_api.dart';
+
 import 'package:better_video_player/widgets/button_widget.dart';
-import 'package:better_video_player/widgets/progress_dialogue_widget.dart';
+
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:path/path.dart' as path;
 
@@ -16,11 +17,11 @@ import 'package:video_compress/video_compress.dart';
 class Custom extends StatefulWidget {
   Custom(
     this.videofilePath,
-    this.videosize,
+   // this.videosize,
   );
 
   final String videofilePath;
-  final String videosize;
+  //final String videosize;
 
   @override
   _CustomState createState() => _CustomState();
@@ -35,11 +36,9 @@ class _CustomState extends State<Custom> {
     setState(() {
       videofile = file;
     });
-   
+
     getVideoSize(videofile!);
   }
-
- 
 
   Future getVideoSize(File file) async {
     final vsize = await file.length();
@@ -47,10 +46,12 @@ class _CustomState extends State<Custom> {
       videoSize = vsize;
     });
   }
-Widget buildVideoSize() {
+
+  Widget buildVideoSize() {
     if (videoSize == null) return Container();
     final size = videoSize! / 1000;
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           "Original Size",
@@ -74,7 +75,6 @@ Widget buildVideoSize() {
 
   Uint8List? thumbnailBytes;
 
-
   Future generateThumbnail() async {
     final thumbnailBytes =
         await VideoCompress.getByteThumbnail(widget.videofilePath);
@@ -85,103 +85,81 @@ Widget buildVideoSize() {
 
   Widget buildThumbNail() => thumbnailBytes == null
       ? CircularProgressIndicator()
-      : Image.memory(
-          thumbnailBytes!,
-          width: 120,
-          // height: 200,
-          //height: 300,
+      :  Container(
+          child: Image.memory(
+          
+            thumbnailBytes!,
+            width: 120,
+            height: 140,
+            fit: BoxFit.cover,
+          ),
         );
 
   bool _loading = false;
   String _counter = "video";
 
-
-   VideoQuality _quality = VideoQuality.DefaultQuality;
+  VideoQuality _quality = VideoQuality.DefaultQuality;
   String name = "Default";
-  // int? select = 2;
-
-  // _compress() async {
-  //   // showDialog(context: context, builder: (Context)=>Dialog(child:ProgressDialogueWidget()));
-  //   setState(() {
-  //     _loading = true;
-  //   });
-  //   await VideoCompress.setLogLevel(0);
-    
-  //   final MediaInfo? mediaInfo = await VideoCompress.compressVideo(
-  //     widget.videofilePath,
-  //     quality: _quality,
-  //     deleteOrigin: false,
-  //     includeAudio: click?false:true,
-  //   );
-  //    setState(() {
-  //     _loading = false;
-  //   });
-  //   print(mediaInfo!.path);
-  //   if (mediaInfo != null) {
-  //     setState(() {
-  //       _counter = mediaInfo.path!;
-  //     });
-       
-  //     print("compressed");
-      
-  //     var file = File('${mediaInfo.path}');
-  //     await file.copy(
-  //         '/storage/emulated/0/Download/${path.basename(mediaInfo.path!)}');
-  //     // await file.copy(
-  //     //     '/Downloads/${path.basename(mediaInfo.path!)}');
-  // setState(() {
-  //     _loading = false;
-  //   });
+  
 
 
-  //     Navigator.push(
-  //         context,
-  //         MaterialPageRoute(
-  //             builder: (Context) => Compressed(widget.videofilePath)));
-      
-  //   } else {
-  //     print("error");
-  //   }
-  // }
-  MediaInfo? compressedVideoInfo;
-  Future _compress() async {
-     showDialog(context: context,
-     barrierDismissible: false
-     , builder: (Context)=>Dialog(
-       
-       child:ProgressDialogueWidget()
-       ));
-   final mediaInfo = await VideoCompressApi.compressVideo(widget.videofilePath);
-   
+  _compress() async {
+    Container(
+      child: AlertDialog(
+        title: Text("Alert Dialog Box"),
+        content: LinearProgressIndicator(
+          semanticsLabel: 'Linear progress indicator',
+        ),
+        actions: <Widget>[
+          FlatButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: Text("okay"),
+          ),
+        ],
+      ),
+    );
     setState(() {
-      compressedVideoInfo = mediaInfo;
+      _loading = true;
     });
-    print(mediaInfo!.path);
-  //   if (mediaInfo != null) {
-  //     setState(() {
-  //       _counter = mediaInfo.path!;
-  //     });
-       
-  //     print("compressed");
-      
-  //     var file = File('${mediaInfo.path}');
-  //     await file.copy(
-  //         '/storage/emulated/0/Download/${path.basename(mediaInfo.path!)}');
-  //     // await file.copy(
-  //     //     '/Downloads/${path.basename(mediaInfo.path!)}');
-  // setState(() {
-  //     _loading = false;
-  //   });
+    await VideoCompress.setLogLevel(0);
+
+    final MediaInfo? mediaInfo = await VideoCompress.compressVideo(
+      widget.videofilePath,
+      quality: _quality,
+      deleteOrigin: false,
+      includeAudio: click ? false : true,
+    );
+    setState(() {
+      _loading = false;
+    });
+  //  print(mediaInfo!.path);
+    if (mediaInfo != null) {
+      setState(() {
+        _counter = mediaInfo.path!;
+      });
+
+      print("compressed");
+
+      var file = File('${mediaInfo.path}');
+      await file.copy(
+          '/storage/emulated/0/Download/${path.basename(mediaInfo.path!)}');
+
+      setState(() {
+        _loading = false;
+      });
 
 
-  //     Navigator.push(
-  //         context,
-  //         MaterialPageRoute(
-  //             builder: (Context) => Compressed(widget.videofilePath)));
-      
-  //   } else {
-  //     print("error");
-  //   }
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (Context) => Compressed(widget.videofilePath,mediaInfo)));
+    } else {
+      VideoCompress.cancelCompression();
+       Fluttertoast.showToast(msg: "Compression Cancelled");
+      print("Compression Cancelled");
+    }
   }
 
   late final Permission _permission;
@@ -197,7 +175,6 @@ Widget buildVideoSize() {
 
   double _value = 0;
 
-
   bool click = false;
   _tap() {
     setState(() {
@@ -208,10 +185,18 @@ Widget buildVideoSize() {
   @override
   void initState() {
     // TODO: implement initState
-    super.initState();
     generateThumbnail();
     _initPlayer();
     _grantPermission();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    VideoCompress.cancelCompression();
+    super.dispose();
+    
   }
 
   @override
@@ -251,7 +236,9 @@ Widget buildVideoSize() {
               color: Colors.white, fontSize: 20, fontWeight: FontWeight.w700),
         ),
       ),
-      body: SingleChildScrollView(
+      body: Stack(
+        children: [
+          SingleChildScrollView(
           child: Container(
         padding: EdgeInsets.only(left: 15, right: 15, top: 20),
         child: Column(
@@ -273,7 +260,9 @@ Widget buildVideoSize() {
                     //     //     fit: BoxFit.cover),
                     //         ),
                     child: buildThumbNail()),
-                    SizedBox(width: 10,),
+                SizedBox(
+                  width: 10,
+                ),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -294,7 +283,7 @@ Widget buildVideoSize() {
                         //       height: 10,
                         //     ),
                         //     Text(
-                             
+
                         //       '${widget.videosize} kb',
                         //       // "3,6MB",
                         //       style: TextStyle(
@@ -304,7 +293,7 @@ Widget buildVideoSize() {
                         //     ),
                         //   ],
                         // ),
-                       buildVideoSize(),
+                        buildVideoSize(),
                         SizedBox(
                           width: 20,
                         ),
@@ -436,7 +425,7 @@ Widget buildVideoSize() {
                       trackHeight: 6.0,
                       thumbColor: Colors.white,
                       thumbShape:
-                           RoundSliderThumbShape(enabledThumbRadius: 10.0),
+                          RoundSliderThumbShape(enabledThumbRadius: 10.0),
                       overlayColor: Colors.red.withAlpha(32),
                       overlayShape:
                           RoundSliderOverlayShape(overlayRadius: 28.0),
@@ -484,7 +473,7 @@ Widget buildVideoSize() {
                       Text(
                         //  "High",
                         name,
-                       
+
                         style: TextStyle(
                             color: Colors.yellow,
                             fontSize: 14,
@@ -521,7 +510,7 @@ Widget buildVideoSize() {
                             onChanged: (VideoQuality? val) {
                               setState(() {
                                 _quality = val!;
-                                name="Low";
+                                name = "Low";
                               });
                             }),
                       ),
@@ -531,10 +520,10 @@ Widget buildVideoSize() {
                             activeColor: Colors.orangeAccent,
                             value: VideoQuality.MediumQuality,
                             groupValue: _quality,
-                           onChanged: (VideoQuality? val) {
+                            onChanged: (VideoQuality? val) {
                               setState(() {
                                 _quality = val!;
-                                name="Medum";
+                                name = "Medum";
                               });
                             }),
                       ),
@@ -547,7 +536,7 @@ Widget buildVideoSize() {
                             onChanged: (VideoQuality? val) {
                               setState(() {
                                 _quality = val!;
-                                name="Default";
+                                name = "Default";
                               });
                             }),
                       ),
@@ -560,7 +549,7 @@ Widget buildVideoSize() {
                             onChanged: (VideoQuality? val) {
                               setState(() {
                                 _quality = val!;
-                                name="High";
+                                name = "High";
                               });
                             }),
                       ),
@@ -698,24 +687,83 @@ Widget buildVideoSize() {
                 onTap: () {
                   _compress();
                 },
-                child:Container(
-                    margin: EdgeInsets.only(
-                        top: 50, bottom: 50, left: 10, right: 10),
-                    child: ButtonWidget(
-                      buttonname: "Continue",
-                    )
-                    )
-                //  _loading?CircularProgressIndicator():Container(
-                //     margin: EdgeInsets.only(
-                //         top: 50, bottom: 50, left: 10, right: 10),
-                //     child: ButtonWidget(
-                //       buttonname: "Continue",
-                //     )
-                //     )
-                    )
+                child: 
+                // _loading
+                //     ? LinearProgressIndicator(
+                //         semanticsLabel: 'Linear progress indicator',
+                //       )
+                    // :
+                     Container(
+                        margin: EdgeInsets.only(
+                            top: 50, bottom: 50, left: 10, right: 10),
+                        child: ButtonWidget(
+                          buttonname: "Continue",
+                        )))
           ],
         ),
       )),
+     _loading?
+      Align(
+        alignment: Alignment.center,
+        child: Container(
+          padding: EdgeInsets.symmetric(horizontal: 20,vertical: 30),
+          height: 200,
+          width: 300,
+          decoration: BoxDecoration(
+            color: Colors.grey[700],
+            borderRadius: BorderRadius.circular(10)
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children:[
+              Text("Compressing Video....",
+              style: TextStyle(
+                color:Colors.white,
+                fontWeight:FontWeight.w700,
+                fontSize: 20
+              ),
+              ),
+              SizedBox(height: 30,),
+              LinearProgressIndicator(
+                semanticsLabel: 'Linear progress indicator',
+                color: AppColors.appColor,
+                backgroundColor: AppColors.appcolorwithop,
+                
+              ),
+               SizedBox(height: 30,),
+               Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                 children: [
+                   GestureDetector(
+                     onTap: (){
+                       VideoCompress.cancelCompression();
+                       Navigator.pop(context);
+                     },
+                     child: Container(
+                       padding: EdgeInsets.symmetric(horizontal: 30,vertical: 10),
+                       decoration: BoxDecoration(
+                         borderRadius: BorderRadius.circular(10),
+                         color: AppColors.appColor,
+                        // color: Colors.white,
+                       ),
+                       child: Text("Cancel",
+                       style: TextStyle(
+                         color: Colors.white,
+                         fontSize: 16,
+                         fontWeight: FontWeight.w700
+                       ),
+                       ),
+                     ),
+                   ),
+                 ],
+               )
+            ]
+          ),
+        ),
+      )
+      :Container()
+        ],
+      )
     );
   }
 }
