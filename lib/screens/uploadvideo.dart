@@ -1,60 +1,69 @@
-
-
-import 'dart:io';
+import 'dart:io' as io;
+import 'dart:typed_data';
 
 import 'package:better_video_player/screens/compress_video.dart';
 import 'package:better_video_player/utils/colors.dart';
 import 'package:flutter/material.dart';
 
-
-
 import 'package:image_picker/image_picker.dart';
-
-
-
+import 'package:path_provider/path_provider.dart';
+import 'package:video_compress/video_compress.dart';
 
 class UploadVideo extends StatefulWidget {
-  const UploadVideo({ Key? key }) : super(key: key);
+// const UploadVideo(this.cmediainfo );
+
+// final MediaInfo cmediainfo;
 
   @override
   _UploadVideoState createState() => _UploadVideoState();
 }
 
 class _UploadVideoState extends State<UploadVideo> {
-
-  
-final picker =ImagePicker();
+  final picker = ImagePicker();
   _pickVideo() async {
     XFile? video = await picker.pickVideo(source: ImageSource.gallery);
-    if(video != null){
-      Navigator.push(context, MaterialPageRoute(builder: (Context)=>CompressVideo(video.path)));
+    if (video != null) {
+      Navigator.push(context,
+          MaterialPageRoute(builder: (Context) => CompressVideo(video.path)));
     }
   }
 
+  var files;
 
-var files;
+  late String directory;
+  List file = [];
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _listofFiles();
+    generateThumbnail();
+  }
+List filee=[];
+  void _listofFiles() async {
+   directory = (await getExternalStorageDirectory())!.path;
+    setState(() {
+      file = io.Directory("/storage/emulated/0/Download/").listSync();
+      
+    });
+    print(file.toString());
+  }
+
+ 
+Uint8List? thumbnailBytes;
+
+  Future generateThumbnail() async {
+    final thumbnailBytes =
+        await VideoCompress.getByteThumbnail('/storage/emulated/0/Download/VID_2021-11-14 07-05-18.mp4');
+    setState(() {
+      this.thumbnailBytes = thumbnailBytes;
+    });
+    print(thumbnailBytes);
+  }
 
 
-// void getfiles()async{
-//   List<StorageInfo> storageInfo=await PathProviderEx.getStorageInfo();
-//   var root =StorageInfo[0].rootDir ;
-//   var fm = FileManager(root: Directory(root));
-//   files = await fm.filesTree(
-//     excludeHidden: ["/storage/emulated/0/Download/"],
 
-//   );
-//   setState(() {
-    
-//   });
-  
-// }
-
-// @override
-//   void initState() {
-//     // TODO: implement initState
-//     super.initState();
-//     getfiles();
-//   }
 
 
   @override
@@ -118,7 +127,7 @@ var files;
                           fontWeight: FontWeight.w600),
                     ),
                   ),
-   
+
                   // if (_video != null)
                   //   _videoPlayerController!.value.isInitialized
                   //       ? AspectRatio(
@@ -133,7 +142,6 @@ var files;
                   GestureDetector(
                     onTap: () {
                       _pickVideo();
-                      
                     },
                     child: Container(
                         width: 230,
@@ -200,7 +208,7 @@ var files;
               ],
             ),
             Expanded(
-              child: Container(
+              child: thumbnailBytes==null?Center(child: CircularProgressIndicator()):Container(
                 child: GridView.builder(
                     //physics: NeverScrollableScrollPhysics(),
                     shrinkWrap: true,
@@ -210,30 +218,36 @@ var files;
                             childAspectRatio: 0.6,
                             crossAxisSpacing: 8,
                             mainAxisSpacing: 8),
-                    itemCount: 10,
+                    itemCount: 1,
                     itemBuilder: (BuildContext ctx, index) {
                       return Stack(
                         children: [
-                          Container(
-                            alignment: Alignment.center,
-                            decoration: BoxDecoration(
-                                //color: Colors.blue,
-                                borderRadius: BorderRadius.circular(5),
-                                image: DecorationImage(
-                                    image:
-                                        AssetImage("assets/images/image.png"),
-                                    fit: BoxFit.cover)),
-                            child: Container(
+                          ClipRRect(
+                              borderRadius: BorderRadius.circular(10),
+                            child:
+                             Container(
+                              alignment: Alignment.center,
                               decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                  colors: [
-                                    Colors.black.withOpacity(.6),
-                                    Colors.black.withOpacity(.1),
-                                    Colors.black.withOpacity(0),
-                                  ],
-                                  stops: [0, .3, 1],
-                                  begin: Alignment.bottomCenter,
-                                  end: Alignment.topCenter,
+                                 
+                                  image: DecorationImage(
+                                     
+                                         image: MemoryImage(thumbnailBytes!),
+                                         //AssetImage("assets/images/image.png"),
+                                      fit: BoxFit.cover
+                                      ),
+                                      ),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                    colors: [
+                                      Colors.black.withOpacity(.6),
+                                      Colors.black.withOpacity(.1),
+                                      Colors.black.withOpacity(0),
+                                    ],
+                                    stops: [0, .3, 1],
+                                    begin: Alignment.bottomCenter,
+                                    end: Alignment.topCenter,
+                                  ),
                                 ),
                               ),
                             ),
@@ -253,9 +267,33 @@ var files;
                     }),
               ),
             ),
+
+            // Expanded(
+            //     child: ListView.builder(
+            //         scrollDirection: Axis.vertical,
+            //         itemCount: file.length,
+            //         itemBuilder: (BuildContext context, int index) {
+            //           return
+            //         Text(file[index].toString(),style: TextStyle(color: Colors.white,fontSize: 20),);
+            //         }))
+
+            
           ],
         ),
       ),
     );
   }
+  Widget buildThumbNail() => thumbnailBytes == null
+      ? CircularProgressIndicator()
+      : ClipRRect(
+         borderRadius: BorderRadius.circular(20),
+child: Image.memory(
+            thumbnailBytes!,
+            width: 150,
+            height: 150,
+            fit: BoxFit.cover,
+          ),
+      );
 }
+
+

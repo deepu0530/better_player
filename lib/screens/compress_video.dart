@@ -146,7 +146,8 @@ class _CompressVideoState extends State<CompressVideo> {
                   child: BetterPlayer.file(
                     "${widget.videoPath}",
                     betterPlayerConfiguration: BetterPlayerConfiguration(
-                      aspectRatio: 16/9,
+                      // aspectRatio: 16/9,
+                       aspectRatio: 1.6,
                       looping: false,
                       autoPlay: false,
                       fit: BoxFit.contain,

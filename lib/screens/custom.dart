@@ -85,7 +85,8 @@ class _CustomState extends State<Custom> {
 
   Widget buildThumbNail() => thumbnailBytes == null
       ? CircularProgressIndicator()
-      :  Container(
+      :  ClipRRect(
+        borderRadius: BorderRadius.circular(10),
           child: Image.memory(
           
             thumbnailBytes!,
