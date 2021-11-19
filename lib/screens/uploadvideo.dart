@@ -1,4 +1,5 @@
 import 'dart:io' as io;
+
 import 'dart:typed_data';
 
 import 'package:better_video_player/screens/compress_video.dart';
@@ -31,40 +32,34 @@ class _UploadVideoState extends State<UploadVideo> {
   var files;
 
   late String directory;
-  List file = [];
+  List listFiles = <io.FileSystemEntity>[];
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     _listofFiles();
-    generateThumbnail();
   }
-List filee=[];
+
   void _listofFiles() async {
-   directory = (await getExternalStorageDirectory())!.path;
+    directory = (await getExternalStorageDirectory())!.path;
     setState(() {
-      file = io.Directory("/storage/emulated/0/Download/").listSync();
-      
+      listFiles = io.Directory("/storage/emulated/0/Download/").listSync();
     });
-    print(file.toString());
+
+    print(listFiles.toString());
   }
-
- 
-Uint8List? thumbnailBytes;
-
-  Future generateThumbnail() async {
-    final thumbnailBytes =
-        await VideoCompress.getByteThumbnail('/storage/emulated/0/Download/VID_2021-11-14 07-05-18.mp4');
-    setState(() {
-      this.thumbnailBytes = thumbnailBytes;
-    });
-    print(thumbnailBytes);
-  }
-
-
-
-
+  // Widget buildThumbNail() => thumbnailBytes == null
+  //     ? Center(child: CircularProgressIndicator())
+  //     : ClipRRect(
+  //         borderRadius: BorderRadius.circular(20),
+  //         child: Image.memory(
+  //           thumbnailBytes!,
+  //           width: 150,
+  //           height: 150,
+  //           fit: BoxFit.cover,
+  //         ),
+  //       );
 
   @override
   Widget build(BuildContext context) {
@@ -127,17 +122,6 @@ Uint8List? thumbnailBytes;
                           fontWeight: FontWeight.w600),
                     ),
                   ),
-
-                  // if (_video != null)
-                  //   _videoPlayerController!.value.isInitialized
-                  //       ? AspectRatio(
-                  //           aspectRatio:
-                  //               _videoPlayerController!.value.aspectRatio,
-                  //           child: VideoPlayer(_videoPlayerController!),
-                  //         )
-                  //       : Container()
-                  // else
-                  //   Text("No video selected"),
 
                   GestureDetector(
                     onTap: () {
@@ -208,7 +192,7 @@ Uint8List? thumbnailBytes;
               ],
             ),
             Expanded(
-              child: thumbnailBytes==null?Center(child: CircularProgressIndicator()):Container(
+              child: Container(
                 child: GridView.builder(
                     //physics: NeverScrollableScrollPhysics(),
                     shrinkWrap: true,
@@ -218,52 +202,9 @@ Uint8List? thumbnailBytes;
                             childAspectRatio: 0.6,
                             crossAxisSpacing: 8,
                             mainAxisSpacing: 8),
-                    itemCount: 1,
+                    itemCount: listFiles.length,
                     itemBuilder: (BuildContext ctx, index) {
-                      return Stack(
-                        children: [
-                          ClipRRect(
-                              borderRadius: BorderRadius.circular(10),
-                            child:
-                             Container(
-                              alignment: Alignment.center,
-                              decoration: BoxDecoration(
-                                 
-                                  image: DecorationImage(
-                                     
-                                         image: MemoryImage(thumbnailBytes!),
-                                         //AssetImage("assets/images/image.png"),
-                                      fit: BoxFit.cover
-                                      ),
-                                      ),
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  gradient: LinearGradient(
-                                    colors: [
-                                      Colors.black.withOpacity(.6),
-                                      Colors.black.withOpacity(.1),
-                                      Colors.black.withOpacity(0),
-                                    ],
-                                    stops: [0, .3, 1],
-                                    begin: Alignment.bottomCenter,
-                                    end: Alignment.topCenter,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                          Positioned(
-                            left: 10,
-                            bottom: 10,
-                            child: Text(
-                              "670 MB",
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w700),
-                            ),
-                          )
-                        ],
-                      );
+                      return VideoItemWidget(file: listFiles[index]);
                     }),
               ),
             ),
@@ -274,26 +215,127 @@ Uint8List? thumbnailBytes;
             //         itemCount: file.length,
             //         itemBuilder: (BuildContext context, int index) {
             //           return
-            //         Text(file[index].toString(),style: TextStyle(color: Colors.white,fontSize: 20),);
+            //          Text('${file[index]}',style: TextStyle(color: Colors.white,fontSize: 20),);
             //         }))
 
-            
+            // for (var i = 0; i < file.length; i++)
+            //   Column(
+            //     children: [
+            //       //buildThumbNail(),
+
+            //       Text(
+            //         file[i].path,
+            //         style: TextStyle(color: Colors.white, fontSize: 20),
+            //       )
+            //     ],
+            //   )
+
+            // buildThumbNail(),
           ],
         ),
       ),
     );
   }
-  Widget buildThumbNail() => thumbnailBytes == null
-      ? CircularProgressIndicator()
-      : ClipRRect(
-         borderRadius: BorderRadius.circular(20),
-child: Image.memory(
-            thumbnailBytes!,
-            width: 150,
-            height: 150,
-            fit: BoxFit.cover,
-          ),
-      );
 }
 
+class VideoItemWidget extends StatefulWidget {
+  const VideoItemWidget({Key? key, this.file}) : super(key: key);
 
+  final io.FileSystemEntity? file;
+
+  @override
+  _VideoItemWidgetState createState() => _VideoItemWidgetState();
+}
+
+class _VideoItemWidgetState extends State<VideoItemWidget> {
+  Uint8List? thumbnailBytes;
+
+  Future generateThumbnail() async {
+      final thumbnailBytes = await VideoCompress.getByteThumbnail(
+          widget.file!.path);
+      setState(() {
+        this.thumbnailBytes = thumbnailBytes;
+      });
+  }
+ io.File? videofile;
+  int? videoSize;
+
+  _initPlayer() {
+    final file = io.File(widget.file!.path);
+    setState(() {
+      videofile = file;
+    });
+   
+    getVideoSize(videofile!);
+  }
+
+ 
+
+  Future getVideoSize(io.File file) async {
+    final vsize = await file.length();
+    setState(() {
+      videoSize = vsize;
+    });
+  }
+
+  Widget buildVideoSize() {
+    if (videoSize == null) return Container();
+    final size = videoSize! / 1000;
+    return Text(
+      "$size kb",
+      // "3,6MB",
+      style: TextStyle(
+          color: Colors.white, fontSize: 20, fontWeight: FontWeight.w700),
+    );
+  }
+  @override
+  void initState() {
+    super.initState();
+    generateThumbnail();
+    _initPlayer();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        ClipRRect(
+          borderRadius: BorderRadius.circular(10),
+          child: thumbnailBytes == null ? Center(child: CircularProgressIndicator(),) : Container(
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: MemoryImage(thumbnailBytes!),
+                  // image: AssetImage("assets/images/image.png"),
+                  fit: BoxFit.cover),
+            ),
+            child: Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    Colors.black.withOpacity(.6),
+                    Colors.black.withOpacity(.1),
+                    Colors.black.withOpacity(0),
+                  ],
+                  stops: [0, .3, 1],
+                  begin: Alignment.bottomCenter,
+                  end: Alignment.topCenter,
+                ),
+              ),
+            ),
+          ),
+        ),
+        Positioned(
+          left: 5,
+          bottom: 10,
+           child:
+           buildVideoSize(),
+          //  Text(
+          //   "670 MB",
+          //   style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700),
+          // ),
+        )
+      ],
+    );
+  }
+}
