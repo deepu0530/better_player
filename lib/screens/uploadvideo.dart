@@ -123,7 +123,7 @@ class _UploadVideoState extends State<UploadVideo> {
                           fontWeight: FontWeight.w600),
                     ),
                   ),
-
+            
                   GestureDetector(
                     onTap: () {
                       _pickVideo();
@@ -195,7 +195,7 @@ class _UploadVideoState extends State<UploadVideo> {
             Expanded(
               child: Container(
                 child: GridView.builder(
-                    //physics: NeverScrollableScrollPhysics(),
+                    // physics: NeverScrollableScrollPhysics(),
                     shrinkWrap: true,
                     gridDelegate:
                         const SliverGridDelegateWithMaxCrossAxisExtent(
@@ -209,28 +209,9 @@ class _UploadVideoState extends State<UploadVideo> {
                     }),
               ),
             ),
-
-            // Expanded(
-            //     child: ListView.builder(
-            //         scrollDirection: Axis.vertical,
-            //         itemCount: file.length,
-            //         itemBuilder: (BuildContext context, int index) {
-            //           return
-            //          Text('${file[index]}',style: TextStyle(color: Colors.white,fontSize: 20),);
-            //         }))
-
-            // for (var i = 0; i < file.length; i++)
-            //   Column(
-            //     children: [
-            //       //buildThumbNail(),
-
-            //       Text(
-            //         file[i].path,
-            //         style: TextStyle(color: Colors.white, fontSize: 20),
-            //       )
-            //     ],
-            //   )
-
+      
+           
+      
             // buildThumbNail(),
           ],
         ),

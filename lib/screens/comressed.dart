@@ -7,10 +7,10 @@ import 'package:flutter/material.dart';
 import 'package:video_compress/video_compress.dart';
 
 class Compressed extends StatefulWidget {
-  const Compressed(this.videofilepath,this.cmediainfo );
+  const Compressed(this.videofilepath, this.cmediainfo);
 
   final String videofilepath;
-final MediaInfo cmediainfo;
+  final MediaInfo cmediainfo;
   @override
   _CompressedState createState() => _CompressedState();
 }
@@ -25,32 +25,30 @@ class _CompressedState extends State<Compressed> {
     });
   }
 
-MediaInfo? CompressedVideoInfo;
+  MediaInfo? CompressedVideoInfo;
 
   Future generateCompressedVideoInfo() async {
-   
     setState(() {
       CompressedVideoInfo = widget.cmediainfo;
     });
   }
-  Widget buildCompressedVideoInfo(){
+
+  Widget buildCompressedVideoInfo() {
     if (CompressedVideoInfo == null) return Container();
     final size = CompressedVideoInfo!.filesize! / 1000;
-       final sizee = size/1024; 
- var mb=sizee.toStringAsFixed(1);
-    return  Text(
-                  "$mb MB",
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 20,
-                      fontWeight: FontWeight.w700),
-                );
+    final sizee = size / 1024;
+    var mb = sizee.toStringAsFixed(1);
+    return Text(
+      "$mb MB",
+      style: TextStyle(
+          color: Colors.white, fontSize: 20, fontWeight: FontWeight.w700),
+    );
   }
 
   Widget buildThumbNail() => thumbnailBytes == null
       ? CircularProgressIndicator()
       : ClipRRect(
-         borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(10),
           child: Image.memory(
             thumbnailBytes!,
             width: 150,
@@ -58,11 +56,6 @@ MediaInfo? CompressedVideoInfo;
             fit: BoxFit.cover,
           ),
         );
-
-
-
-
-
 
   @override
   void initState() {
