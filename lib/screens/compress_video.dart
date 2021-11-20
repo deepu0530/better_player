@@ -44,6 +44,8 @@ class _CompressVideoState extends State<CompressVideo> {
   Widget buildVideoSize() {
     if (videoSize == null) return Container();
     final size = videoSize! / 1000;
+       final sizee = size/1024; 
+ var mb=sizee.toStringAsFixed(1);
     return Column(
       children: [
         Text(
@@ -57,7 +59,7 @@ class _CompressVideoState extends State<CompressVideo> {
           height: 10,
         ),
         Text(
-          "$size kb",
+          "$mb MB",
           // "3,6MB",
           style: TextStyle(
               color: Colors.white, fontSize: 20, fontWeight: FontWeight.w700),

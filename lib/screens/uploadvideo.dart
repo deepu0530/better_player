@@ -1,5 +1,6 @@
+import 'dart:ffi';
 import 'dart:io' as io;
-
+import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:better_video_player/screens/compress_video.dart';
@@ -276,13 +277,18 @@ class _VideoItemWidgetState extends State<VideoItemWidget> {
     setState(() {
       videoSize = vsize;
     });
+    print(videoSize);
   }
+
+
 
   Widget buildVideoSize() {
     if (videoSize == null) return Container();
     final size = videoSize! / 1000;
+   final sizee = size/1024; 
+ var mb=sizee.toStringAsFixed(1);
     return Text(
-      "$size kb",
+      "$mb MB",
       // "3,6MB",
       style: TextStyle(
           color: Colors.white, fontSize: 20, fontWeight: FontWeight.w700),

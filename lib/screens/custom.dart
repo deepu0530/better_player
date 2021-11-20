@@ -50,6 +50,8 @@ class _CustomState extends State<Custom> {
   Widget buildVideoSize() {
     if (videoSize == null) return Container();
     final size = videoSize! / 1000;
+       final sizee = size/1024; 
+ var mb=sizee.toStringAsFixed(1);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -64,7 +66,7 @@ class _CustomState extends State<Custom> {
           height: 10,
         ),
         Text(
-          "$size kb",
+          "$mb MB",
           // "3,6MB",
           style: TextStyle(
               color: Colors.white, fontSize: 20, fontWeight: FontWeight.w700),

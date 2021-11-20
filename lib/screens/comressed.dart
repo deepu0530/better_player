@@ -36,11 +36,13 @@ MediaInfo? CompressedVideoInfo;
   Widget buildCompressedVideoInfo(){
     if (CompressedVideoInfo == null) return Container();
     final size = CompressedVideoInfo!.filesize! / 1000;
+       final sizee = size/1024; 
+ var mb=sizee.toStringAsFixed(1);
     return  Text(
-                  "$size kb",
+                  "$mb MB",
                   style: TextStyle(
                       color: Colors.white,
-                      fontSize: 14,
+                      fontSize: 20,
                       fontWeight: FontWeight.w700),
                 );
   }
