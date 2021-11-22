@@ -1,5 +1,6 @@
 
 import 'package:better_video_player/screens/uploadvideo.dart';
+import 'package:better_video_player/screens/uploadvideo_for_trim.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -20,7 +21,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
          unselectedWidgetColor:Colors.grey[600],
       ),
-      home:UploadVideo()
+      home:ChooseVideoForTrim()
     );
   }
 }
