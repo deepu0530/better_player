@@ -1,3 +1,4 @@
+import 'package:better_player/better_player.dart';
 import 'package:better_video_player/screens/trim_video.dart';
 import 'package:better_video_player/utils/colors.dart';
 import 'package:flutter/material.dart';
@@ -21,7 +22,7 @@ class _ChooseVideoForTrimState extends State<ChooseVideoForTrim> {
           MaterialPageRoute(builder: (Context) => TrimVideo(video.path)));
     }
   }
-
+  late BetterPlayerController _betterPlayerController;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
