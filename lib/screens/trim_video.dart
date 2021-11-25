@@ -26,52 +26,52 @@ class _TrimVideoState extends State<TrimVideo> {
   String _counter = "video";
 
   VideoQuality _quality = VideoQuality.DefaultQuality;
-  // String name = "Default";
 
-  _compress() async {
-    setState(() {
-      _loading = true;
-    });
-    await VideoCompress.setLogLevel(0);
 
-    final MediaInfo? mediaInfo = await VideoCompress.compressVideo(
-      widget.videoPath,
-      quality: _quality,
-      deleteOrigin: false,
-      includeAudio: true,
-      startTime: 0,
-      duration: 30,
-    );
+  // _compress() async {
+  //   setState(() {
+  //     _loading = true;
+  //   });
+  //   await VideoCompress.setLogLevel(0);
 
-    setState(() {
-      _loading = false;
-    });
-    //  print(mediaInfo!.path);
-    if (mediaInfo != null) {
-      setState(() {
-        _counter = mediaInfo.path!;
-      });
+  //   final MediaInfo? mediaInfo = await VideoCompress.compressVideo(
+  //     widget.videoPath,
+  //     quality: _quality,
+  //     deleteOrigin: false,
+  //     includeAudio: true,
+  //     startTime: 0,
+  //     duration: 30,
+  //   );
 
-      print("compressed");
+  //   setState(() {
+  //     _loading = false;
+  //   });
+  //   //  print(mediaInfo!.path);
+  //   if (mediaInfo != null) {
+  //     setState(() {
+  //       _counter = mediaInfo.path!;
+  //     });
 
-      var file = File('${mediaInfo.path}');
-      await file.copy(
-          '/storage/emulated/0/Download/${path.basename(mediaInfo.path!)}');
+  //     print("compressed");
 
-      setState(() {
-        _loading = false;
-      });
+  //     var file = File('${mediaInfo.path}');
+  //     await file.copy(
+  //         '/storage/emulated/0/Download/${path.basename(mediaInfo.path!)}');
 
-      Navigator.push(context,
-          MaterialPageRoute(builder: (Context) => ChooseVideoForTrim()));
+  //     setState(() {
+  //       _loading = false;
+  //     });
 
-      Fluttertoast.showToast(msg: "Compression Completed ");
-    } else {
-      VideoCompress.cancelCompression();
-      Fluttertoast.showToast(msg: "Compression Cancelled");
-      print("Compression Cancelled");
-    }
-  }
+  //     Navigator.push(context,
+  //         MaterialPageRoute(builder: (Context) => ChooseVideoForTrim()));
+
+  //     Fluttertoast.showToast(msg: "Compression Completed ");
+  //   } else {
+  //     VideoCompress.cancelCompression();
+  //     Fluttertoast.showToast(msg: "Compression Cancelled");
+  //     print("Compression Cancelled");
+  //   }
+  // }
 
   late final Permission _permission;
   void _grantPermission() async {
@@ -109,11 +109,15 @@ class _TrimVideoState extends State<TrimVideo> {
     super.dispose();
   }
 
-   trimfunction() async {
+   void trimfunction() async {
+      setState(() {
+      _loading = false;
+    });
     final MediaInfo? videoInfo = await VideoCompress.getMediaInfo(widget.videoPath);
-    var seconds = videoInfo!.duration! / 1000;
+    var Video_cut_length=10;
+    var seconds = (videoInfo!.duration! / 1000).ceil();
       print('Seconds : ${seconds}');
-    var div = seconds / 10;
+    var div = seconds / Video_cut_length;
       print('Division : ${div}');
     var ceil = div.ceil();
       print('ceil ${ceil}');
@@ -121,14 +125,14 @@ class _TrimVideoState extends State<TrimVideo> {
       
       var st = i * 10;
         print('Start Time : ${st}');
-      var du = ceil + st + 5;
+      var duration = seconds- st - Video_cut_length;
+      var du =duration<0?0:duration;
+
         print('Duration : ${du}');
- setState(() {
+         setState(() {
       _loading = true;
     });
-    await VideoCompress.setLogLevel(0);
-
-    final MediaInfo? mediaInfo = await VideoCompress.compressVideo(
+         final MediaInfo? mediaInfo = await VideoCompress.compressVideo(
       widget.videoPath,
       quality: _quality,
       deleteOrigin: false,
@@ -136,36 +140,17 @@ class _TrimVideoState extends State<TrimVideo> {
       startTime: st,
       duration: du,
     );
-
-    setState(() {
-      _loading = false;
-    });
-    //  print(mediaInfo!.path);
-    if (mediaInfo != null) {
-      setState(() {
-        _counter = mediaInfo.path!;
-      });
-
-      print("compressed");
-
-      var file = File('${mediaInfo.path}');
+     var file = File('${mediaInfo!.path}');
       await file.copy(
           '/storage/emulated/0/Trimvideos/${path.basename(mediaInfo.path!)}');
-
+    }
       setState(() {
-        _loading = false;
-      });
+      _loading = false;
 
-      Navigator.push(context,
+    });
+     Navigator.push(context,
           MaterialPageRoute(builder: (Context) => ChooseVideoForTrim()));
-
-      Fluttertoast.showToast(msg: "Compression Completed ");
-    } else {
-      VideoCompress.cancelCompression();
-      Fluttertoast.showToast(msg: "Compression Cancelled");
-      print("Compression Cancelled");
-    }
-    }
+           Fluttertoast.showToast(msg: "Compression Completed ");
   }
 
   @override
