@@ -108,13 +108,19 @@ class _TrimVideoState extends State<TrimVideo> {
     super.dispose();
   }
 
-  void trimfunction() async {
+  void trimfunction(int type) async {
     setState(() {
       _loading = false;
     });
     final MediaInfo? videoInfo =
         await VideoCompress.getMediaInfo(widget.videoPath);
     var Video_cut_length = 10;
+    if (type == 1) {
+      Video_cut_length = 30;
+    }
+    if (type == 2) {
+      Video_cut_length = 10;
+    }
     var seconds = (videoInfo!.duration! / 1000).ceil();
     print('Seconds : ${seconds}');
     var div = seconds / Video_cut_length;
@@ -122,7 +128,7 @@ class _TrimVideoState extends State<TrimVideo> {
     var ceil = div.ceil();
     print('ceil ${ceil}');
     for (var i = 0; i < ceil; i++) {
-      var st = i * 10;
+      var st = i * Video_cut_length;
       print('Start Time : ${st}');
       var duration = seconds - st - Video_cut_length;
       var du = duration < 0 ? 0 : duration;
@@ -141,7 +147,7 @@ class _TrimVideoState extends State<TrimVideo> {
       );
       var file = File('${mediaInfo!.path}');
       await file.copy(
-          '/storage/emulated/0/Trimvideos/${path.basename(mediaInfo.path!)}');
+          '/storage/emulated/0/Download/${path.basename(mediaInfo.path!)}');
     }
     setState(() {
       _loading = false;
@@ -184,105 +190,25 @@ class _TrimVideoState extends State<TrimVideo> {
                   SizedBox(
                     height: 100,
                   ),
-                  // Row(
-                  //   mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  //   children: [
-                  // GestureDetector(
-                  //   onTap: () {
-                  //     // _compress();
-                  //     trimfunction();
-                  //   },
-                  //   child: Container(
-                  //       // width: 230,
-                  //       padding: EdgeInsets.symmetric(
-                  //           horizontal: 20, vertical: 15),
-                  //       // margin: EdgeInsets.only(top: 30, bottom: 50),
-                  //       decoration: BoxDecoration(
-                  //         borderRadius: BorderRadius.circular(35),
-                  //         color: AppColors.appColor,
-                  //       ),
-                  //       child: Center(
-                  //         child: Row(
-                  //           mainAxisAlignment: MainAxisAlignment.center,
-                  //           children: [
-                  //             Image.asset(
-                  //               "assets/icons/whatsapp.png",
-                  //               height: 30,
-                  //               width: 30,
-                  //               // color: Colors.white,
-                  //             ),
-                  //             // Icon(
-                  //             //   Icons.file_upload,
-                  //             //   size: 30,
-                  //             //   color: Colors.white,
-                  //             // ),
-                  //             SizedBox(
-                  //               width: 10,
-                  //             ),
-                  //             Text(
-                  //               "Trim Video",
-                  //               style: TextStyle(
-                  //                   color: Colors.white,
-                  //                   fontSize: 18,
-                  //                   fontWeight: FontWeight.w500),
-                  //             ),
-                  //           ],
-                  //         ),
-                  //       )),
-                  // ),
-                  // // SizedBox(width: 20,),
-                  //     GestureDetector(
-                  //       onTap: () {
-                  //         //  _compress();
-                  //       },
-                  //       child: Container(
-                  //           // width: 230,
-                  //           padding: EdgeInsets.symmetric(
-                  //               horizontal: 20, vertical: 15),
-                  //           // margin: EdgeInsets.only(top: 30, bottom: 50),
-                  //           decoration: BoxDecoration(
-                  //             borderRadius: BorderRadius.circular(35),
-                  //             color: AppColors.appColor,
-                  //           ),
-                  //           child: Center(
-                  //             child: Row(
-                  //               mainAxisAlignment: MainAxisAlignment.center,
-                  //               children: [
-                  //                 Image.asset(
-                  //                   "assets/icons/instagram (2).png",
-                  //                   height: 30,
-                  //                   width: 30,
-                  //                   color: Colors.white,
-                  //                 ),
-                  //                 // Icon(
-                  //                 //   Icons.file_upload,
-                  //                 //   size: 30,
-                  //                 //   color: Colors.white,
-                  //                 // ),
-                  //                 SizedBox(
-                  //                   width: 10,
-                  //                 ),
-                  //                 Text(
-                  //                   "Trim Video",
-                  //                   style: TextStyle(
-                  //                       color: Colors.white,
-                  //                       fontSize: 18,
-                  //                       fontWeight: FontWeight.w500),
-                  //                 ),
-                  //               ],
-                  //             ),
-                  //           )),
-                  //     ),
-                  //   ],
-                  // ),
-
-                 Row(
-                   mainAxisAlignment: MainAxisAlignment.spaceAround,
-                   children: [
-                     Buttons(path:widget.videoPath,img: "assets/icons/whatsapp.png",),
-                      Buttons(path:widget.videoPath,img: "assets/icons/instagram (2).png",)
-                   ],
-                 )
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      Buttons(
+                        path: widget.videoPath,
+                        img: "assets/icons/whatsapp.png",
+                        onPressed: () {
+                          trimfunction(1);
+                        },
+                      ),
+                      Buttons(
+                        path: widget.videoPath,
+                        img: "assets/icons/instagram (2).png",
+                        onPressed: () {
+                          trimfunction(2);
+                        },
+                      )
+                    ],
+                  )
                 ],
               ),
               _loading
@@ -355,129 +281,51 @@ class _TrimVideoState extends State<TrimVideo> {
 }
 
 class Buttons extends StatefulWidget {
-  const Buttons({ required this.img,required this.path , }) : super();
-final String path;
-final String img;
+  const Buttons({required this.img, required this.path, this.onPressed})
+      : super();
+  final String path;
+  final String img;
+  final Function? onPressed;
 
   @override
   _ButtonsState createState() => _ButtonsState();
 }
 
 class _ButtonsState extends State<Buttons> {
-
-
- late BetterPlayerController _betterPlayerController;
-
-String image="assets/icons/whatsapp.png";
-  bool _loading = false;
-  String _counter = "video";
-
-  VideoQuality _quality = VideoQuality.DefaultQuality;
-
-
-
-  void trimfunction() async {
-    setState(() {
-      _loading = false;
-    });
-    final MediaInfo? videoInfo =
-        await VideoCompress.getMediaInfo(widget.path);
-    var Video_cut_length = image==widget.img?30:10;
-    var seconds = (videoInfo!.duration! / 1000).ceil();
-    print('Seconds : ${seconds}');
-    var div = seconds / Video_cut_length;
-    print('Division : ${div}');
-    var ceil = div.ceil();
-    print('ceil ${ceil}');
-    for (var i = 0; i < ceil; i++) {
-      var st = image==widget.img? i * 30 : i*10;
-      print('Start Time : ${st}');
-      var duration = seconds - st - Video_cut_length;
-      var du = duration < 0 ? 0 : duration;
-
-      print('Duration : ${du}');
-      setState(() {
-        _loading = true;
-      });
-      final MediaInfo? mediaInfo = await VideoCompress.compressVideo(
-        widget.path,
-        quality: _quality,
-        deleteOrigin: false,
-        includeAudio: true,
-        startTime: st,
-        duration: du,
-      );
-      var file = File('${mediaInfo!.path}');
-      await file.copy(
-          '/storage/emulated/0/Trimvideos/${path.basename(mediaInfo.path!)}');
-    }
-    setState(() {
-      _loading = false;
-    });
-    Navigator.push(
-        context, MaterialPageRoute(builder: (Context) => ChooseVideoForTrim()));
-    Fluttertoast.showToast(msg: "Compression Completed ");
-  }
-
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-                          onTap: () {
-                            // _compress();
-
-                            trimfunction();
-                          },
-                          child: Container(
-
-                              // width: 230,
-
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: 20, vertical: 15),
-
-                              // margin: EdgeInsets.only(top: 30, bottom: 50),
-
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(35),
-                                color: AppColors.appColor,
-                              ),
-                              child: Center(
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Image.asset(
-                                      //"assets/icons/whatsapp.png",
-widget.img,
-                                      height: 30,
-
-                                      width: 30,
-
-                                      // color: Colors.white,
-                                    ),
-
-                                    // Icon(
-
-                                    //   Icons.file_upload,
-
-                                    //   size: 30,
-
-                                    //   color: Colors.white,
-
-                                    // ),
-
-                                    SizedBox(
-                                      width: 10,
-                                    ),
-
-                                    Text(
-                                      "Trim Video",
-                                      style: TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.w500),
-                                    ),
-                                  ],
-                                ),
-                              )),
-                        );
+      onTap: () {
+        widget.onPressed?.call();
+      },
+      child: Container(
+          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(35),
+            color: AppColors.appColor,
+          ),
+          child: Center(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Image.asset(
+                  widget.img,
+                  height: 30,
+                  width: 30,
+                ),
+                SizedBox(
+                  width: 10,
+                ),
+                Text(
+                  "Trim Video",
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w500),
+                ),
+              ],
+            ),
+          )),
+    );
   }
 }

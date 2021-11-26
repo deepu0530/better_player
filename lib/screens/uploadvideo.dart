@@ -97,21 +97,24 @@ class _UploadVideoState extends State<UploadVideo> {
                 ),
               ],
             ),
-            SizedBox(
+            
+      Expanded(
+        child: SingleChildScrollView(
+          child: Container(
+            child: Column(
+              children: [
+                SizedBox(
               height: 50,
             ),
-            Center(
-              child: Column(
-                children: [
-                  Text(
+     
+                 Text(
                     "Upload Your Video",
                     style: TextStyle(
                         color: Colors.white,
                         fontSize: 35,
                         fontWeight: FontWeight.w700),
                   ),
-                  // SizedBox(height: 10,),
-                  Padding(
+                            Padding(
                     padding:
                         const EdgeInsets.only(left: 30, right: 30, top: 15),
                     child: Text(
@@ -123,8 +126,7 @@ class _UploadVideoState extends State<UploadVideo> {
                           fontWeight: FontWeight.w600),
                     ),
                   ),
-            
-                  GestureDetector(
+                   GestureDetector(
                     onTap: () {
                       _pickVideo();
                     },
@@ -165,11 +167,8 @@ class _UploadVideoState extends State<UploadVideo> {
                             ],
                           ),
                         )),
-                  )
-                ],
-              ),
-            ),
-            Row(
+                  ),
+                    Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
@@ -192,10 +191,9 @@ class _UploadVideoState extends State<UploadVideo> {
                 // )
               ],
             ),
-            Expanded(
-              child: Container(
+                  Container(
                 child: GridView.builder(
-                    // physics: NeverScrollableScrollPhysics(),
+                     physics: NeverScrollableScrollPhysics(),
                     shrinkWrap: true,
                     gridDelegate:
                         const SliverGridDelegateWithMaxCrossAxisExtent(
@@ -208,8 +206,14 @@ class _UploadVideoState extends State<UploadVideo> {
                       return VideoItemWidget(file: listFiles[index]);
                     }),
               ),
+               
+               
+        
+              ],
             ),
-      
+          ),
+        ),
+      )
            
       
             // buildThumbNail(),

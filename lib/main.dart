@@ -1,4 +1,5 @@
 
+import 'package:better_video_player/screens/trim_video.dart';
 import 'package:better_video_player/screens/uploadvideo.dart';
 import 'package:better_video_player/screens/uploadvideo_for_trim.dart';
 import 'package:flutter/material.dart';
