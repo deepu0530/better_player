@@ -18,7 +18,6 @@ class CompressVideo extends StatefulWidget {
 }
 
 class _CompressVideoState extends State<CompressVideo> {
-
   bool _loading = true;
   File? videofile;
   int? videoSize;
@@ -28,11 +27,9 @@ class _CompressVideoState extends State<CompressVideo> {
     setState(() {
       videofile = file;
     });
-   
+
     getVideoSize(videofile!);
   }
-
- 
 
   Future getVideoSize(File file) async {
     final vsize = await file.length();
@@ -44,8 +41,8 @@ class _CompressVideoState extends State<CompressVideo> {
   Widget buildVideoSize() {
     if (videoSize == null) return Container();
     final size = videoSize! / 1000;
-       final sizee = size/1024; 
- var mb=sizee.toStringAsFixed(1);
+    final sizee = size / 1024;
+    var mb = sizee.toStringAsFixed(1);
     return Column(
       children: [
         Text(
@@ -94,7 +91,6 @@ class _CompressVideoState extends State<CompressVideo> {
     _betterPlayerController.dispose();
     super.dispose();
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -149,12 +145,11 @@ class _CompressVideoState extends State<CompressVideo> {
                     "${widget.videoPath}",
                     betterPlayerConfiguration: BetterPlayerConfiguration(
                       // aspectRatio: 16/9,
-                       aspectRatio: 1.6,
+                      aspectRatio: 1.6,
                       looping: false,
                       autoPlay: false,
                       fit: BoxFit.contain,
                     ),
-                  
                   ),
                 ),
               ),
@@ -220,10 +215,7 @@ class _CompressVideoState extends State<CompressVideo> {
                         context,
                         MaterialPageRoute(
                             builder: (Context) => Custom(
-                                  
                                   widget.videoPath,
-                                  
-                                  //'${videoSize}',
                                 )));
                   },
                   child: Container(
@@ -275,7 +267,6 @@ class _CompressionTypeListWidgetState extends State<CompressionTypeListWidget> {
             children: [
               Text(
                 widget.typename,
-                // "Basic Compression",
                 style: TextStyle(
                     color: Colors.white,
                     fontSize: 20,
@@ -286,7 +277,6 @@ class _CompressionTypeListWidgetState extends State<CompressionTypeListWidget> {
               ),
               Text(
                 widget.desc,
-                // "Medium file size, best quality",
                 style: TextStyle(
                     color: Colors.white.withOpacity(0.5),
                     fontSize: 16,

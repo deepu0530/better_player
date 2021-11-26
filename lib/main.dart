@@ -1,7 +1,12 @@
 
+
+import 'package:better_video_player/screens/compress_video.dart';
+import 'package:better_video_player/screens/home_page.dart';
 import 'package:better_video_player/screens/trim_video.dart';
 import 'package:better_video_player/screens/uploadvideo.dart';
 import 'package:better_video_player/screens/uploadvideo_for_trim.dart';
+import 'package:better_video_player/utils/colors.dart';
+import 'package:better_video_player/widgets/button_widget.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -22,7 +27,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
          unselectedWidgetColor:Colors.grey[600],
       ),
-      home:ChooseVideoForTrim()
+      home:HomePage()
     );
   }
 }

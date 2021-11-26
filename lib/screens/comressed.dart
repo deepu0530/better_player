@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:better_video_player/screens/home_page.dart';
 import 'package:better_video_player/screens/uploadvideo.dart';
 import 'package:better_video_player/utils/colors.dart';
 import 'package:better_video_player/widgets/button_widget.dart';
@@ -131,13 +132,6 @@ class _CompressedState extends State<Compressed> {
                   height: 15,
                 ),
                 buildCompressedVideoInfo(),
-                // Text(
-                //   "1,2MB",
-                //   style: TextStyle(
-                //       color: Colors.white,
-                //       fontSize: 14,
-                //       fontWeight: FontWeight.w700),
-                // ),
                 SizedBox(
                   height: 50,
                 ),
@@ -162,10 +156,8 @@ class _CompressedState extends State<Compressed> {
               children: [
                 GestureDetector(
                     onTap: () {
-                      // Navigator.push(
-                      //     context,
-                      //     MaterialPageRoute(
-                      //         builder: (Context) => Compressed()));
+                        Navigator.push(context,
+                        MaterialPageRoute(builder: (Context) => UploadVideo()));
                     },
                     child: Container(
                         margin: EdgeInsets.only(
@@ -176,7 +168,7 @@ class _CompressedState extends State<Compressed> {
                 GestureDetector(
                   onTap: () {
                     Navigator.push(context,
-                        MaterialPageRoute(builder: (Context) => UploadVideo()));
+                        MaterialPageRoute(builder: (Context) => HomePage()));
                   },
                   child: Text(
                     "Back to Home",

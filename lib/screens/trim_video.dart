@@ -27,51 +27,6 @@ class _TrimVideoState extends State<TrimVideo> {
 
   VideoQuality _quality = VideoQuality.DefaultQuality;
 
-  // _compress() async {
-  //   setState(() {
-  //     _loading = true;
-  //   });
-  //   await VideoCompress.setLogLevel(0);
-
-  //   final MediaInfo? mediaInfo = await VideoCompress.compressVideo(
-  //     widget.videoPath,
-  //     quality: _quality,
-  //     deleteOrigin: false,
-  //     includeAudio: true,
-  //     startTime: 0,
-  //     duration: 30,
-  //   );
-
-  //   setState(() {
-  //     _loading = false;
-  //   });
-  //   //  print(mediaInfo!.path);
-  //   if (mediaInfo != null) {
-  //     setState(() {
-  //       _counter = mediaInfo.path!;
-  //     });
-
-  //     print("compressed");
-
-  //     var file = File('${mediaInfo.path}');
-  //     await file.copy(
-  //         '/storage/emulated/0/Download/${path.basename(mediaInfo.path!)}');
-
-  //     setState(() {
-  //       _loading = false;
-  //     });
-
-  //     Navigator.push(context,
-  //         MaterialPageRoute(builder: (Context) => ChooseVideoForTrim()));
-
-  //     Fluttertoast.showToast(msg: "Compression Completed ");
-  //   } else {
-  //     VideoCompress.cancelCompression();
-  //     Fluttertoast.showToast(msg: "Compression Cancelled");
-  //     print("Compression Cancelled");
-  //   }
-  // }
-
   late final Permission _permission;
   void _grantPermission() async {
     var status = await Permission.storage.status;
@@ -83,22 +38,10 @@ class _TrimVideoState extends State<TrimVideo> {
     }
   }
 
-  // double _value = 0;
-
-  // bool click = false;
-  // _tap() {
-  //   setState(() {
-  //     click = !click;
-  //   });
-  // }
-
   @override
   void initState() {
-    // TODO: implement initState
-
     _grantPermission();
     super.initState();
-    // trimfunction();
   }
 
   @override
@@ -145,9 +88,10 @@ class _TrimVideoState extends State<TrimVideo> {
         startTime: st,
         duration: du,
       );
-      var file = File('${mediaInfo!.path}');
-      await file.copy(
-          '/storage/emulated/0/Download/${path.basename(mediaInfo.path!)}');
+      
+      var tfile = File('${mediaInfo!.path}');
+      await tfile.copy(
+          '/storage/emulated/0/VidComp/Trim/${path.basename(mediaInfo.path!)}');
     }
     setState(() {
       _loading = false;
