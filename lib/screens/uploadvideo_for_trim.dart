@@ -93,7 +93,7 @@ class _ChooseVideoForTrimState extends State<ChooseVideoForTrim> {
                             ),
                           )),
                     ),
-                  
+                 
        ],
      ),
    ),
